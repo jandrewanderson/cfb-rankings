@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Model Mathematics & Architecture Documentation</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- KaTeX for High-Fidelity Math Typesetting -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+</head>
+<body class="bg-slate-950 text-slate-200 min-h-screen p-4 md:p-10 font-sans">
+  <div class="max-w-6xl mx-auto space-y-12">
+    
+    <!-- Top Nav / Header -->
+    <header class="border-b border-slate-800 pb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div>
+        <div class="flex items-center gap-2 mb-1">
+          <span class="bg-blue-600/20 text-blue-400 text-xs font-bold px-3 py-1 rounded-full border border-blue-500/30 uppercase tracking-widest">Official Specification</span>
+          <span class="text-xs text-slate-500 font-mono">Version 2.5 | 134 FBS Engine</span>
+        </div>
+        <h1 class="text-4xl font-black text-white tracking-tight">Mathematical Architecture & Rating Engine</h1>
+        <p class="text-slate-400 text-sm mt-1">Complete structural documentation, derivation mechanics, raw formula definitions, and worked proofs.</p>
+      </div>
+      <a href="index.html" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-blue-600/25 flex items-center gap-2">
+        <span>&larr;</span> Return to Dashboard
+      </a>
+    </header>
+
+    <!-- Table of Contents -->
+    <nav class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <a href="#foundations" class="bg-slate-900 border border-slate-800 p-3 rounded-xl hover:border-blue-500 transition-colors text-center text-xs font-bold text-slate-300 hover:text-white">1. Core Power Scores</a>
+      <a href="#decay" class="bg-slate-900 border border-slate-800 p-3 rounded-xl hover:border-blue-500 transition-colors text-center text-xs font-bold text-slate-300 hover:text-white">2. Dynamic Calendar Decay</a>
+      <a href="#precalculated" class="bg-slate-900 border border-slate-800 p-3 rounded-xl hover:border-blue-500 transition-colors text-center text-xs font-bold text-slate-300 hover:text-white">3. Historical Constants</a>
+      <a href="#updates" class="bg-slate-900 border border-slate-800 p-3 rounded-xl hover:border-blue-500 transition-colors text-center text-xs font-bold text-slate-300 hover:text-white">4. Game Update Engine</a>
+    </nav>
+
+    <!-- PART 1: THE CORE POWER SCORES -->
+    <section id="foundations" class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+      <div class="border-b border-slate-800 pb-4">
+        <h2 class="text-2xl font-black text-white">Part 1: The Three Primary Power Scores</h2>
+        <p class="text-slate-400 text-sm mt-1">Every program has three distinct ratings evaluated concurrently: Pure Score, Score with Prior, and Full Power Score.</p>
+      </div>
+
+      <!-- Pure Score -->
+      <div class="space-y-3 bg-slate-950 p-6 rounded-xl border border-slate-800">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-bold text-emerald-400">A. Pure Score</h3>
+          <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-0.5 rounded font-mono">Zero Prior Bias</span>
+        </div>
+        <p class="text-sm text-slate-300 leading-relaxed">
+          The <strong>Pure Score</strong> measures solely on-field achievement during the active season. Every program begins Week 1 at exactly $1,500.0$ Elo. It combines $80\%$ of the team's current on-field performance with $20\%$ conference baseline strength.
+        </p>
+        <div class="py-2 text-center">
+          $$\text{Pure Score} = 0.80 \cdot (\text{Pure Team Elo}) + \text{Conf Blend}$$
+        </div>
+        <div class="text-xs text-slate-400 bg-slate-900/60 p-4 rounded-lg space-y-1">
+          <div><strong class="text-slate-200">Starting Baseline:</strong> All 134 programs start Week 1 at $\text{Pure Team Elo} = 1500.0$.</div>
+          <div><strong class="text-slate-200">Conf Blend Component:</strong> Accounts for league schedule strength without relying on preseason rankings ($20\%$ total conference weight).</div>
+        </div>
+      </div>
+
+      <!-- Score w/ Prior -->
+      <div class="space-y-3 bg-slate-950 p-6 rounded-xl border border-slate-800">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-bold text-blue-400">B. Score w/ Prior</h3>
+          <span class="text-xs bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2.5 py-0.5 rounded font-mono">Historical Floor Grounding</span>
+        </div>
+        <p class="text-sm text-slate-300 leading-relaxed">
+          The <strong>Score w/ Prior</strong> grounds early-season volatility against multi-year program floors. Rather than starting at $1,500.0$, a team begins Week 1 seeded at their mathematically derived <em>Regressed Prior</em>.
+        </p>
+        <div class="py-2 text-center">
+          $$\text{Score w/ Prior} = 0.80 \cdot (\text{Team Elo w/ Prior}) + \text{Conf Blend}$$
+        </div>
+        <div class="text-xs text-slate-400 bg-slate-900/60 p-4 rounded-lg space-y-1">
+          <div><strong class="text-slate-200">Starting Baseline:</strong> Seeded at each program's specific offseason mean-regressed prior (e.g., Georgia starts at $1,727.7$, Ohio State at $1,724.1$).</div>
+          <div><strong class="text-slate-200">In-Season Game Updates:</strong> Wins and losses adjust this rating game-by-game concurrently with the Pure Elo rating.</div>
+        </div>
+      </div>
+
+      <!-- Full Power Score -->
+      <div class="space-y-3 bg-slate-950 p-6 rounded-xl border border-slate-800">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-bold text-amber-400">C. Full Power Score (National Ranking Metric)</h3>
+          <span class="text-xs bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2.5 py-0.5 rounded font-mono">Master Dashboard Rank</span>
+        </div>
+        <p class="text-sm text-slate-300 leading-relaxed">
+          The <strong>Full Power Score</strong> is the final value used to rank the 134 FBS programs. It is built in two distinct stages: (1) Dynamic weighting across the calendar, and (2) applying the direct per-loss tax.
+        </p>
+        <div class="py-2 text-center space-y-2">
+          $$\text{Composite Score} = W_{\text{PureScore}}(w) \cdot (\text{Pure Score}) + W_{\text{Prior}}(w) \cdot (\text{Score w/ Prior}) + W_{\text{PureElo}}(w) \cdot (\text{Pure Team Elo})$$
+          $$\text{Full Power Score} = \text{Composite Score} \times \left(1.0 - 0.0075 \cdot \text{Losses}\right)$$
+        </div>
+        <div class="text-xs text-slate-400 bg-slate-900/60 p-4 rounded-lg space-y-1">
+          <div><strong class="text-slate-200">0.75% Loss Tax:</strong> Directly penalizes losses. A 10–0 team retains $100\%$ of its rating; a 9–1 team retains $99.25\%$; an 8–2 team retains $98.5\%$. This breaks rating ties in favor of on-field undefeated records.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PART 2: DYNAMIC CALENDAR SUNSET -->
+    <section id="decay" class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+      <div class="border-b border-slate-800 pb-4">
+        <h2 class="text-2xl font-black text-white">Part 2: Dynamic Calendar Prior Decay</h2>
+        <p class="text-slate-400 text-sm mt-1">Preseason priors carry high predictive utility in September but become irrelevant by November. The engine linearly phases priors out as on-field sample size increases.</p>
+      </div>
+
+      <p class="text-sm text-slate-300 leading-relaxed">
+        Across the standard 12-week regular season, the weight assigned to <em>Score w/ Prior</em> linearly sunsets from <strong>35% in Week 1</strong> down to <strong>10% in Week 12</strong>. The vacated weight is transferred dynamically into the Pure Score and Pure Elo:
+      </p>
+
+      <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 text-center">
+        $$W_{\text{Prior}}(w) = \max\left(0.10, \; 0.35 - (w - 1) \cdot \frac{0.25}{11.0}\right)$$
+        $$W_{\text{PureScore}}(w) = \frac{0.60 \cdot (1.0 - W_{\text{Prior}}(w))}{1.0 - 0.2364}$$
+        $$W_{\text{PureElo}}(w) = 1.0 - W_{\text{Prior}}(w) - W_{\text{PureScore}}(w)$$
+      </div>
+
+      <!-- Schedule Weight Progression Table -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="bg-slate-800 text-slate-300 uppercase tracking-wider font-bold">
+              <th class="p-3 border-b border-slate-700">Week ($w$)</th>
+              <th class="p-3 border-b border-slate-700">Prior Weight ($W_{\text{Prior}}$)</th>
+              <th class="p-3 border-b border-slate-700">Pure Score Weight ($W_{\text{PureScore}}$)</th>
+              <th class="p-3 border-b border-slate-700">Pure Elo Weight ($W_{\text{PureElo}}$)</th>
+              <th class="p-3 border-b border-slate-700">Strategic State</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800 font-mono text-slate-300">
+            <tr class="hover:bg-slate-800/40">
+              <td class="p-3 font-bold text-white">Week 1</td>
+              <td class="p-3 text-blue-400 font-bold">35.0%</td>
+              <td class="p-3 text-emerald-400">51.0%</td>
+              <td class="p-3">14.0%</td>
+              <td class="p-3 font-sans text-slate-400">Priors protect blue-bloods against single-game flukes</td>
+            </tr>
+            <tr class="hover:bg-slate-800/40">
+              <td class="p-3 font-bold text-white">Week 4</td>
+              <td class="p-3 text-blue-400 font-bold">28.2%</td>
+              <td class="p-3 text-emerald-400">56.4%</td>
+              <td class="p-3">15.4%</td>
+              <td class="p-3 font-sans text-slate-400">Conference play begins; on-field results take majority command</td>
+            </tr>
+            <tr class="hover:bg-slate-800/40">
+              <td class="p-3 font-bold text-white">Week 7</td>
+              <td class="p-3 text-blue-400 font-bold">21.4%</td>
+              <td class="p-3 text-emerald-400">61.7%</td>
+              <td class="p-3">16.9%</td>
+              <td class="p-3 font-sans text-slate-400">Midseason inflection point; resume overtakes brand equity</td>
+            </tr>
+            <tr class="hover:bg-slate-800/40">
+              <td class="p-3 font-bold text-white">Week 10</td>
+              <td class="p-3 text-blue-400 font-bold">14.5%</td>
+              <td class="p-3 text-emerald-400">67.1%</td>
+              <td class="p-3">18.4%</td>
+              <td class="p-3 font-sans text-slate-400">Championship stretch; prior influence nearly extinguished</td>
+            </tr>
+            <tr class="hover:bg-slate-800/40 bg-blue-950/20">
+              <td class="p-3 font-bold text-white">Week 12+</td>
+              <td class="p-3 text-blue-400 font-bold">10.0% (Floor)</td>
+              <td class="p-3 text-emerald-400 font-bold">70.7%</td>
+              <td class="p-3 font-bold">19.3%</td>
+              <td class="p-3 font-sans text-emerald-400">90% of all ranking weight is driven purely by active-season outcomes</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- PART 3: PRE-CALCULATED HISTORICAL CONSTANTS -->
+    <section id="precalculated" class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-8">
+      <div class="border-b border-slate-800 pb-4">
+        <h2 class="text-2xl font-black text-white">Part 3: Derivation of Precalculated Historical Constants</h2>
+        <p class="text-slate-400 text-sm mt-1">Before Week 1 kicks off, all 134 programs have three frozen parameters precalculated from historical data: Multi-Horizon Conference Anchors, Decoupled Venue Splits, and Offseason Mean-Regression Priors.</p>
+      </div>
+
+      <!-- 1. Conference Multi-Horizon Blend -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+          1. Multi-Horizon Conference Strength Formula
+        </h3>
+        <p class="text-sm text-slate-300 leading-relaxed">
+          Conference strength is not an arbitrary tier list. It is calculated by aggregating all non-conference matchups across three separate temporal horizons to balance multi-decade tradition with immediate year-over-year roster strength:
+        </p>
+        <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 text-center">
+          $$\text{Conf Blend} = 0.05 \cdot (\text{Conf}_{\text{4-Yr Base}}) + 0.05 \cdot (\text{Conf}_{\text{1-Yr w/ Prior}}) + 0.10 \cdot (\text{Conf}_{\text{Cur-Yr}})$$
+        </div>
+        <div class="overflow-x-auto text-xs">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-800 text-slate-300 font-bold uppercase">
+                <th class="p-3">Conference</th>
+                <th class="p-3">4-Yr Base (5%)</th>
+                <th class="p-3">1-Yr w/ Prior (5%)</th>
+                <th class="p-3">Cur-Yr (10%)</th>
+                <th class="p-3">Calculated Conf Blend</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800 font-mono text-slate-300">
+              <tr>
+                <td class="p-3 font-bold text-white">SEC</td>
+                <td class="p-3">1671.0</td>
+                <td class="p-3">1663.2</td>
+                <td class="p-3">1644.0</td>
+                <td class="p-3 text-emerald-400 font-bold">331.11</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-bold text-white">Big Ten</td>
+                <td class="p-3">1648.5</td>
+                <td class="p-3">1653.8</td>
+                <td class="p-3">1656.4</td>
+                <td class="p-3 text-emerald-400 font-bold">330.76</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-bold text-white">Big 12</td>
+                <td class="p-3">1544.5</td>
+                <td class="p-3">1543.0</td>
+                <td class="p-3">1538.5</td>
+                <td class="p-3 text-emerald-400 font-bold">308.23</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-bold text-white">ACC</td>
+                <td class="p-3">1520.1</td>
+                <td class="p-3">1532.5</td>
+                <td class="p-3">1541.0</td>
+                <td class="p-3 text-emerald-400 font-bold">306.73</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-bold text-white">MAC</td>
+                <td class="p-3">1245.0</td>
+                <td class="p-3">1246.2</td>
+                <td class="p-3">1248.0</td>
+                <td class="p-3 text-emerald-400 font-bold">249.36</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 2. Decoupled Venue Deltas -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          2. Decoupled Venue Splits ($\delta_{\text{Home}}$ & $\delta_{\text{Away}}$)
+        </h3>
+        <p class="text-sm text-slate-300 leading-relaxed">
+          Stadia do not create equal advantages. Visiting Baton Rouge at night is vastly different from playing in a neutral dome. Each stadium's home boost and road travel penalty are computed from 4-year regular season home and away point margins:
+        </p>
+        <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 text-center space-y-2">
+          $$\text{Spread}_i = \text{Avg Margin}_{\text{Home}}(i) - \text{Avg Margin}_{\text{Away}}(i)$$
+          $$w_{\text{Away}} = \frac{|\text{Avg Margin}_{\text{Away}}(i)|}{|\text{Avg Margin}_{\text{Home}}(i)| + |\text{Avg Margin}_{\text{Away}}(i)|}, \quad w_{\text{Home}} = 1.0 - w_{\text{Away}}$$
+          $$\delta_{\text{Home}}(i) = \text{clamp}\left(16.0 \cdot \left[1.0 + (\text{Spread}_i - 8.0) \cdot w_{\text{Home}} \cdot 0.25\right], \; 0.0, \; 40.0\right)$$
+          $$\delta_{\text{Away}}(i) = \text{clamp}\left(-16.0 \cdot \left[1.0 + (\text{Spread}_i - 8.0) \cdot w_{\text{Away}} \cdot 0.25\right], \; -50.0, \; 0.0\right)$$
+        </div>
+
+        <!-- Worked Venue Examples -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+            <div class="flex justify-between items-center">
+              <strong class="text-white text-sm">Worked Example: LSU (Tiger Stadium)</strong>
+              <span class="text-emerald-400 font-bold">Host Edge: +56.0</span>
+            </div>
+            <p class="text-slate-400">4-Year Home Margin $= +18.4$, 4-Year Road Margin $= +2.2$</p>
+            <div class="bg-slate-900 p-3 rounded font-mono text-slate-300 space-y-1">
+              <div>Spread = 18.4 - 2.2 = +16.2</div>
+              <div>w_away = 2.2 / (18.4 + 2.2) = 0.107; w_home = 0.893</div>
+              <div>d_h = clamp(16 * [1 + (16.2 - 8) * 0.893 * 0.25], 0, 40) = <strong class="text-emerald-400">+40.0 (Max Cap)</strong></div>
+              <div>d_a = clamp(-16 * [1 + (16.2 - 8) * 0.107 * 0.25], -50, 0) = <strong class="text-rose-400">-19.5</strong></div>
+            </div>
+          </div>
+
+          <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+            <div class="flex justify-between items-center">
+              <strong class="text-white text-sm">Worked Example: Miami FL (Hard Rock Stadium)</strong>
+              <span class="text-slate-400 font-bold">Host Edge: +16.0</span>
+            </div>
+            <p class="text-slate-400">4-Year Home Margin $= +10.2$, 4-Year Road Margin $= +10.4$</p>
+            <div class="bg-slate-900 p-3 rounded font-mono text-slate-300 space-y-1">
+              <div>Spread = 10.2 - 10.4 = -0.2 (Road performance matches Home)</div>
+              <div>Spread is below 8.0 neutral floor</div>
+              <div>d_h = <strong class="text-slate-200">0.0 (Zero home crowd boost)</strong></div>
+              <div>d_a = <strong class="text-slate-200">0.0 (Zero travel penalty)</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Dual Anchor Regression -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+          3. Dual-Anchor Continuous Offseason Mean-Regression
+        </h3>
+        <p class="text-sm text-slate-300 leading-relaxed">
+          How do we seed team priors without trusting subjective coaches polls or media hype? The engine runs a dual-anchor regression on every program's final score from the preceding season:
+        </p>
+        <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 text-center space-y-2">
+          $$\text{Anchor}_i = 0.80 \cdot \bar{E}_{\text{4yr}}(i) + 0.20 \cdot (\text{Conf Base})$$
+          $$R_i = \text{clamp}\left(0.28 - 0.035 \cdot \left(\frac{\bar{E}_{\text{4yr}} - 1500}{100}\right) + 0.050 \cdot \left(\frac{|\text{Score}_{t-1} - \bar{E}_{\text{4yr}}|}{100}\right), \; 0.18, \; 0.42\right)$$
+          $$\text{Regressed Prior}_i = (1.0 - R_i) \cdot \text{Score}_{t-1} + R_i \cdot \text{Anchor}_i$$
+        </div>
+        <div class="text-xs text-slate-400 bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-1">
+          <div><strong class="text-slate-200">Blue-Blood Protection:</strong> Georgia and Ohio State possess high 4-year floors ($\bar{E} > 1750$). Their continuous regression rate $R_i$ drops near the $18\text{--}21\%$ minimum, protecting their elite prior from artificial shrinkage.</div>
+          <div><strong class="text-slate-200">Outlier Spikes Regressed:</strong> A team finishing far above its 4-year average (e.g., Indiana jumping to an undefeated season) generates a higher regression rate $R_i \approx 40.1\%$, forcing them toward their multi-year anchor to prevent multi-year distorted bias.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PART 4: GAME UPDATE ARITHMETIC & RAW FORMULAS -->
+    <section id="updates" class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-8">
+      <div class="border-b border-slate-800 pb-4">
+        <h2 class="text-2xl font-black text-white">Part 4: Single-Game Update Engine & Mathematical Formulation</h2>
+        <p class="text-slate-400 text-sm mt-1">Exhaustive breakdown of raw formulas, operational parameters, logarithmic margin scaling, and a worked upset trace.</p>
+      </div>
+
+      <!-- Raw Mathematical Equations Section -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+          1. The Raw System Equations
+        </h3>
+        <p class="text-sm text-slate-300 leading-relaxed">
+          For any contest between Home Team $H$ and Away Team $A$, the engine computes win probabilities and rating adjustments according to the following system of four equations:
+        </p>
+
+        <div class="bg-slate-950 p-6 rounded-xl border border-slate-800 space-y-4 text-center">
+          <div>
+            <div class="text-xs text-slate-400 mb-1 font-mono">Equation 4.1: Decoupled Win Expectancy</div>
+            $$E_H = \frac{1}{1 + 10^{\frac{[\text{Elo}_A + \delta_{\text{Away}}(A)] - [\text{Elo}_H + \delta_{\text{Home}}(H)]}{400.0}}}, \quad E_A = 1.0 - E_H$$
+          </div>
+          <div>
+            <div class="text-xs text-slate-400 mb-1 font-mono">Equation 4.2: Logarithmic Margin Normalization</div>
+            $$M_{\text{norm}} = \frac{\ln(|\text{Score}_H - \text{Score}_A| + 1)}{\ln(8.0)}$$
+          </div>
+          <div>
+            <div class="text-xs text-slate-400 mb-1 font-mono">Equation 4.3: 70/30 Hybrid Multiplier</div>
+            $$\text{Mult} = 0.70 + 0.30 \cdot M_{\text{norm}}$$
+          </div>
+          <div>
+            <div class="text-xs text-slate-400 mb-1 font-mono">Equation 4.4: Asymmetric Rating Adjustments</div>
+            $$\Delta \text{Elo}_{\text{Win}} = +K_{\text{win}} \cdot (1.0 - E_{\text{Winner}}) \cdot \text{Mult}, \quad K_{\text{win}} = 48.0$$
+            $$\Delta \text{Elo}_{\text{Loss}} = -K_{\text{loss}} \cdot (E_{\text{Loser}}) \cdot \text{Mult}, \quad K_{\text{loss}} = 96.0$$
+          </div>
+        </div>
+      </div>
+
+      <!-- Parameter Descriptions Table -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          2. Parameter Definitions & Theoretical Foundations
+        </h3>
+        <div class="overflow-x-auto text-xs">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-800 text-slate-300 font-bold uppercase">
+                <th class="p-3 border-b border-slate-700">Parameter</th>
+                <th class="p-3 border-b border-slate-700">Value / Formula</th>
+                <th class="p-3 border-b border-slate-700">Structural Role & Purpose</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800 font-mono text-slate-300">
+              <tr>
+                <td class="p-3 text-blue-400 font-bold">K_win</td>
+                <td class="p-3 font-bold text-white">48.0</td>
+                <td class="p-3 font-sans text-slate-400">Determines the maximum possible rating points a winning team can acquire from an improbable victory.</td>
+              </tr>
+              <tr>
+                <td class="p-3 text-rose-400 font-bold">K_loss</td>
+                <td class="p-3 font-bold text-white">96.0 (2x K_win)</td>
+                <td class="p-3 font-sans text-slate-400">Doubled loss penalty ensures top contenders suffer severe rating drops when upset, preventing multi-loss teams from lingering near #1.</td>
+              </tr>
+              <tr>
+                <td class="p-3 text-emerald-400 font-bold">70/30 Split</td>
+                <td class="p-3">0.70 + 0.30 * M_norm</td>
+                <td class="p-3 font-sans text-slate-400">70% of the update is anchored strictly to winning the game. 30% scales with point differential, preventing excessive running up of scores.</td>
+              </tr>
+              <tr>
+                <td class="p-3 text-amber-400 font-bold">ln(8.0) Denominator</td>
+                <td class="p-3">2.07944</td>
+                <td class="p-3 font-sans text-slate-400">Normalizes a one-touchdown margin (7 points: $\ln(7+1)/\ln(8) = 1.0$) to equal exactly $1.0$, producing an unscaled baseline multiplier of $1.00$.</td>
+              </tr>
+              <tr>
+                <td class="p-3 text-slate-200 font-bold">&delta;_Home / &delta;_Away</td>
+                <td class="p-3">[0.0, +40.0] / [-50.0, 0.0]</td>
+                <td class="p-3 font-sans text-slate-400">Adjusts pre-kickoff win expectations based on stadium difficulty. A road team is evaluated against a tougher standard than on a neutral field.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Worked Upset Example -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+          3. Complete Step-by-Step Worked Trace: Vanderbilt vs. Alabama
+        </h3>
+        <p class="text-sm text-slate-300 leading-relaxed">
+          The following trace demonstrates the exact arithmetic performed by the engine during Vanderbilt's 40–35 upset over Alabama:
+        </p>
+
+        <div class="bg-slate-950 p-6 rounded-xl border border-slate-800 space-y-4 text-xs font-mono">
+          <div class="text-slate-400 text-sm font-sans font-bold text-white border-b border-slate-800 pb-2">
+            Matchup: Alabama (Away) at Vanderbilt (Home) | Final Score: Vanderbilt 40, Alabama 35 (Margin: +5 points)
+          </div>
+
+          <div class="space-y-2">
+            <div class="text-blue-400 font-bold">Step 1: Compute Venue-Adjusted Effective Elo</div>
+            <div class="pl-4 text-slate-300">
+              <div>Vanderbilt Pure Elo: 1450.0 | Home Boost (&delta;Home): +4.8 &rarr; Effective Home Elo = 1454.8</div>
+              <div>Alabama Pure Elo: 1674.0 | Away Penalty (&delta;Away): -18.9 &rarr; Effective Away Elo = 1655.1</div>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <div class="text-blue-400 font-bold">Step 2: Calculate Win Expectancy Probabilities ($E$)</div>
+            <div class="pl-4 text-slate-300">
+              <div>Exponent = (1655.1 - 1454.8) / 400.0 = 200.3 / 400.0 = 0.50075</div>
+              <div>10^0.50075 = 3.16773</div>
+              <div>E_Vandy (Home) = 1.0 / (1.0 + 3.16773) = 1.0 / 4.16773 = <strong>0.2399 (24.0% expected win probability)</strong></div>
+              <div>E_Bama (Away) = 1.0 - 0.2399 = <strong>0.7601 (76.0% expected win probability)</strong></div>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <div class="text-blue-400 font-bold">Step 3: Calculate Logarithmic Margin Multiplier (70/30 Split)</div>
+            <div class="pl-4 text-slate-300">
+              <div>Absolute Score Margin = |40 - 35| = 5 points</div>
+              <div>M_norm = ln(5 + 1) / ln(8.0) = ln(6.0) / ln(8.0) = 1.79176 / 2.07944 = 0.86166</div>
+              <div>Mult = 0.70 + 0.30 * 0.86166 = 0.70 + 0.25850 = <strong>0.9585</strong></div>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <div class="text-blue-400 font-bold">Step 4: Execute Asymmetric Updates (K_win=48.0, K_loss=96.0)</div>
+            <div class="pl-4 text-slate-300">
+              <div>Vanderbilt Update: +48.0 * (1.0 - 0.2399) * 0.9585 = +48.0 * 0.7601 * 0.9585 = <strong class="text-emerald-400">+34.97 Elo points</strong></div>
+              <div>Alabama Update: -96.0 * (0.7601) * 0.9585 = <strong class="text-rose-400">-69.94 Elo points</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <p class="text-xs text-slate-400 leading-relaxed">
+          <strong>The Asymmetry at Work:</strong> Because Vanderbilt pulled off an upset as a $24\%$ underdog, they gain $+35.0$ rating points. But because Alabama lost as a $76\%$ road favorite, the doubled loss penalty ($K=96.0$) deducts $-69.9$ points from their rating, pushing them down the rankings.
+        </p>
+      </div>
+    </section>
+
+  </div>
+</body>
+</html>
