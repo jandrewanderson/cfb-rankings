@@ -7,6 +7,8 @@ import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
+#adding to https://github.com/jandrewanderson/cfb-rankings repository
+
 # Securely read the API key from environment variables
 API_KEY = os.environ.get("CFBD_API_KEY", "").strip()
 if not API_KEY:
