@@ -11,9 +11,12 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
     onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+  
+  <!-- html2pdf for exporting docs -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body class="bg-slate-950 text-slate-200 min-h-screen p-4 md:p-10 font-sans">
-  <div class="max-w-6xl mx-auto space-y-12">
+  <div class="max-w-6xl mx-auto space-y-12" id="docs-content">
     
     <!-- Top Nav / Header -->
     <header class="border-b border-slate-800 pb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -25,9 +28,15 @@
         <h1 class="text-4xl font-black text-white tracking-tight">Mathematical Architecture & Rating Engine</h1>
         <p class="text-slate-400 text-sm mt-1">Complete structural documentation, derivation mechanics, raw formula definitions, and worked proofs.</p>
       </div>
-      <a href="index.html" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-blue-600/25 flex items-center gap-2">
-        <span>&larr;</span> Return to Dashboard
-      </a>
+      <div class="flex items-center gap-3">
+        <div class="flex gap-1.5">
+          <button onclick="exportDocs('pdf')" class="bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-semibold px-3 py-2.5 rounded-xl transition-colors">Download PDF</button>
+          <button onclick="exportDocs('word')" class="bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-semibold px-3 py-2.5 rounded-xl transition-colors">Download Word</button>
+        </div>
+        <a href="index.html" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-blue-600/25 flex items-center gap-2">
+          <span>&larr;</span> Return to Dashboard
+        </a>
+      </div>
     </header>
 
     <!-- Table of Contents -->
@@ -452,5 +461,34 @@
     </section>
 
   </div>
+
+  <!-- Document Export Script -->
+  <script>
+    function exportDocs(format) {
+        const docElement = document.getElementById("docs-content") || document.body;
+        if (format === 'pdf') {
+            const opt = {
+                margin:       0.5,
+                filename:     'cfb-rankings-documentation.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            html2pdf().from(docElement).set(opt).save();
+        } 
+        else if (format === 'word') {
+            const htmlHeader = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>";
+            const htmlBody = `<body>${docElement.innerHTML}</body></html>`;
+            const blob = new Blob(['\ufeff' + (htmlHeader + htmlBody)], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            const anchor = document.createElement('a');
+            anchor.href = url;
+            anchor.download = 'cfb-rankings-documentation.doc';
+            document.body.appendChild(anchor);
+            anchor.click();
+            anchor.remove();
+        }
+    }
+  </script>
 </body>
 </html>

@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>College Football Power Rankings & Elo Model</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Export Libraries via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen">
   <div class="max-w-[1600px] mx-auto px-4 py-8">
@@ -56,9 +59,21 @@
           </select>
         </div>
       </div>
-      <div>
-        <label class="block text-xs uppercase font-bold text-slate-400 mb-1">Search Database</label>
-        <input type="text" id="searchInput" oninput="renderCurrentTable()" placeholder="Search team or conference..." class="bg-slate-800 border border-slate-700 text-white text-sm rounded-lg px-4 py-2 outline-none focus:border-blue-500 w-64">
+      
+      <!-- Search & Export Controls -->
+      <div class="flex flex-wrap items-center gap-4">
+        <div>
+          <label class="block text-xs uppercase font-bold text-slate-400 mb-1">Search Database</label>
+          <input type="text" id="searchInput" oninput="renderCurrentTable()" placeholder="Search team or conference..." class="bg-slate-800 border border-slate-700 text-white text-sm rounded-lg px-4 py-2 outline-none focus:border-blue-500 w-64">
+        </div>
+        <div>
+          <label class="block text-xs uppercase font-bold text-slate-400 mb-1">Export View</label>
+          <div class="flex gap-1.5">
+            <button onclick="exportCurrentTable('csv')" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold px-3 py-2 rounded-lg transition-colors">CSV</button>
+            <button onclick="exportCurrentTable('json')" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold px-3 py-2 rounded-lg transition-colors">JSON</button>
+            <button onclick="exportCurrentTable('pdf')" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold px-3 py-2 rounded-lg transition-colors">PDF</button>
+          </div>
+        </div>
       </div>
     </div>
 

@@ -304,4 +304,61 @@ function renderVenuesTable() {
   `).join('');
 }
 
+// --- CLIENT-SIDE EXPORT ENGINE ---
+
+function exportCurrentTable(format) {
+    let activeData = currentDataset;
+    let exportName = "cfb_rankings_latest";
+
+    if (currentTab === 'conferences') {
+        activeData = conferenceDataset;
+        exportName = "cfb_conferences_rankings";
+    } else if (currentTab === 'venues') {
+        activeData = currentDataset.filter(d => d.venue_rank !== undefined);
+        exportName = "cfb_venue_intelligence";
+    } else {
+        const isMulti = document.getElementById('modeSelect').value === 'multi';
+        if (isMulti) {
+            const range = document.getElementById('rangeSelect').value;
+            exportName = `cfb_multiyear_${range}`;
+        } else {
+            const yr = document.getElementById('seasonSelect').value;
+            const wkVal = document.getElementById('weekSelect').value;
+            exportName = `cfb_rankings_${yr}_${wkVal}`;
+        }
+    }
+
+    if (!activeData || activeData.length === 0) {
+        alert("No active dataset loaded to export.");
+        return;
+    }
+
+    if (format === 'json') {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(activeData, null, 2));
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", `${exportName}.json`);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+    } 
+    else if (format === 'csv') {
+        const worksheet = XLSX.utils.json_to_sheet(activeData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Export");
+        XLSX.writeFile(workbook, `${exportName}.csv`);
+    } 
+    else if (format === 'pdf') {
+        const element = document.getElementById("tableContainer");
+        const opt = {
+            margin:       0.5,
+            filename:     `${exportName}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'in', format: 'letter', orientation: 'landscape' }
+        };
+        html2pdf().from(element).set(opt).save();
+    }
+}
+
 init();
