@@ -5,9 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>College Football Power Rankings & Elo Model</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Export Libraries via CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    @media print {
+      header, .no-print { display: none !important; }
+      body { background-color: white !important; color: black !important; }
+      #tableContainer { overflow: visible !important; border: none !important; }
+      table { width: 100% !important; border-collapse: collapse !important; color: black !important; }
+      th, td { border: 1px solid #cbd5e1 !important; color: black !important; padding: 4px 8px !important; }
+    }
+  </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen">
   <div class="max-w-[1600px] mx-auto px-4 py-8">
@@ -26,8 +32,8 @@
       </nav>
     </header>
 
-    <!-- Controls, Dropdowns & Search -->
-    <div class="my-6 flex flex-wrap gap-4 items-center justify-between bg-slate-900/60 p-4 rounded-xl border border-slate-800/80">
+    <!-- Controls, Dropdowns, Search & Exports -->
+    <div class="my-6 flex flex-wrap gap-4 items-center justify-between bg-slate-900/60 p-4 rounded-xl border border-slate-800/80 no-print">
       <div class="flex flex-wrap items-center gap-3">
         <div>
           <label class="block text-xs uppercase font-bold text-slate-400 mb-1">Mode</label>
@@ -59,7 +65,7 @@
           </select>
         </div>
       </div>
-      
+
       <!-- Search & Export Controls -->
       <div class="flex flex-wrap items-center gap-4">
         <div>
@@ -67,11 +73,11 @@
           <input type="text" id="searchInput" oninput="renderCurrentTable()" placeholder="Search team or conference..." class="bg-slate-800 border border-slate-700 text-white text-sm rounded-lg px-4 py-2 outline-none focus:border-blue-500 w-64">
         </div>
         <div>
-          <label class="block text-xs uppercase font-bold text-slate-400 mb-1">Export View</label>
+          <label class="block text-xs uppercase font-bold text-slate-400 mb-1">Export Active View</label>
           <div class="flex gap-1.5">
-            <button onclick="exportCurrentTable('csv')" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold px-3 py-2 rounded-lg transition-colors">CSV</button>
-            <button onclick="exportCurrentTable('json')" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold px-3 py-2 rounded-lg transition-colors">JSON</button>
-            <button onclick="exportCurrentTable('pdf')" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold px-3 py-2 rounded-lg transition-colors">PDF</button>
+            <button type="button" onclick="exportCurrentTable('csv')" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold px-3 py-2 rounded-lg transition-colors cursor-pointer">CSV</button>
+            <button type="button" onclick="exportCurrentTable('json')" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold px-3 py-2 rounded-lg transition-colors cursor-pointer">JSON</button>
+            <button type="button" onclick="exportCurrentTable('pdf')" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold px-3 py-2 rounded-lg transition-colors cursor-pointer">PDF</button>
           </div>
         </div>
       </div>

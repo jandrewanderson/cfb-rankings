@@ -307,58 +307,70 @@ function renderVenuesTable() {
 // --- CLIENT-SIDE EXPORT ENGINE ---
 
 function exportCurrentTable(format) {
-    let activeData = currentDataset;
-    let exportName = "cfb_rankings_latest";
+  if (format === 'pdf') {
+    window.print();
+    return;
+  }
 
-    if (currentTab === 'conferences') {
-        activeData = conferenceDataset;
-        exportName = "cfb_conferences_rankings";
-    } else if (currentTab === 'venues') {
-        activeData = currentDataset.filter(d => d.venue_rank !== undefined);
-        exportName = "cfb_venue_intelligence";
+  // Determine active dataset and file name
+  let activeData = currentDataset;
+  let filename = "cfb_rankings_export";
+
+  if (currentTab === 'conferences') {
+    activeData = conferenceDataset;
+    filename = "cfb_conferences_rankings";
+  } else if (currentTab === 'venues') {
+    activeData = currentDataset.filter(d => d.venue_rank !== undefined);
+    filename = "cfb_venue_intelligence";
+  } else {
+    const isMulti = document.getElementById('modeSelect').value === 'multi';
+    if (isMulti) {
+      const range = document.getElementById('rangeSelect').value;
+      filename = `cfb_multiyear_${range}`;
     } else {
-        const isMulti = document.getElementById('modeSelect').value === 'multi';
-        if (isMulti) {
-            const range = document.getElementById('rangeSelect').value;
-            exportName = `cfb_multiyear_${range}`;
-        } else {
-            const yr = document.getElementById('seasonSelect').value;
-            const wkVal = document.getElementById('weekSelect').value;
-            exportName = `cfb_rankings_${yr}_${wkVal}`;
-        }
+      const yr = document.getElementById('seasonSelect').value;
+      const wkVal = document.getElementById('weekSelect').value;
+      filename = `cfb_rankings_${yr}_${wkVal}`;
     }
+  }
 
-    if (!activeData || activeData.length === 0) {
-        alert("No active dataset loaded to export.");
-        return;
-    }
+  if (!activeData || activeData.length === 0) {
+    alert("No dataset currently loaded to export.");
+    return;
+  }
 
-    if (format === 'json') {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(activeData, null, 2));
-        const downloadAnchor = document.createElement('a');
-        downloadAnchor.setAttribute("href", dataStr);
-        downloadAnchor.setAttribute("download", `${exportName}.json`);
-        document.body.appendChild(downloadAnchor);
-        downloadAnchor.click();
-        downloadAnchor.remove();
-    } 
-    else if (format === 'csv') {
-        const worksheet = XLSX.utils.json_to_sheet(activeData);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Export");
-        XLSX.writeFile(workbook, `${exportName}.csv`);
-    } 
-    else if (format === 'pdf') {
-        const element = document.getElementById("tableContainer");
-        const opt = {
-            margin:       0.5,
-            filename:     `${exportName}.pdf`,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2 },
-            jsPDF:        { unit: 'in', format: 'letter', orientation: 'landscape' }
-        };
-        html2pdf().from(element).set(opt).save();
-    }
+  if (format === 'json') {
+    const blob = new Blob([JSON.stringify(activeData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${filename}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } else if (format === 'csv') {
+    const keys = Object.keys(activeData[0]);
+    const csvRows = [
+      keys.join(','),
+      ...activeData.map(row => 
+        keys.map(k => {
+          let val = row[k] === null || row[k] === undefined ? '' : String(row[k]);
+          val = val.replace(/"/g, '""');
+          return `"${val}"`;
+        }).join(',')
+      )
+    ];
+    const blob = new Blob([csvRows.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${filename}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
 }
 
 init();
