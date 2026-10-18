@@ -39,16 +39,15 @@ def get_cfb_seasons():
 
 CUR_YEAR, PREV_YEAR = get_cfb_seasons()
 
-# Safe Web Request Session (Removed 429 from forcelist so we can instantly swap keys)
+# Safe Web Request Session
 session = requests.Session()
 retries = Retry(total=5, backoff_factor=1.0, status_forcelist=[500, 502, 503, 504])
 session.mount("https://", HTTPAdapter(max_retries=retries))
 
 def cfbd_get(endpoint, params=None):
     global CURRENT_KEY_IDX
-    global BASE_URL
-    BASE_URL = "https://api.collegefootballdata.com"
-    url = f"{BASE_URL}{endpoint}"
+    base_url = "https://api.collegefootballdata.com"
+    url = f"{base_url}{endpoint}"
     
     max_attempts = len(API_KEYS) * 3
     for attempt in range(max_attempts):
@@ -58,21 +57,18 @@ def cfbd_get(endpoint, params=None):
         try:
             r = session.get(url, headers=headers, params=params or {}, timeout=60)
             
-            # If rate limited, swap to the next backup key instantly
             if r.status_code == 429:
                 print(f"Rate limit (429) hit on Key {CURRENT_KEY_IDX + 1}. Swapping to backup key...")
                 CURRENT_KEY_IDX = (CURRENT_KEY_IDX + 1) % len(API_KEYS)
                 time.sleep(1.0)
                 continue
                 
-            # If unauthorized, swap to the next backup key instantly
             if r.status_code == 401:
                 print(f"Unauthorized (401) hit on Key {CURRENT_KEY_IDX + 1}. Swapping to backup key...")
                 CURRENT_KEY_IDX = (CURRENT_KEY_IDX + 1) % len(API_KEYS)
                 time.sleep(0.5)
                 continue
             
-            # Base breather to respect API
             time.sleep(0.2)
             
             if r.status_code != 200:
@@ -103,7 +99,6 @@ def get_fbs_teams_and_confs(year):
         return teams
         
     print(f"\n🚨 CRITICAL ERROR: Failed to fetch FBS teams for {year} from API.")
-    print("The API may be down, or rate limits (HTTP 429) have been exceeded on all keys.")
     sys.exit(1)
 
 def extract_game(g):
@@ -185,7 +180,7 @@ def get_ap_polls(target_year):
     return ap_map
 
 # =====================================================================
-# V3.0 MATHEMATICS & 100% DYNAMIC BASELINES
+# V3.0 MATHEMATICS & DYNAMIC BASELINES
 # =====================================================================
 
 def get_margin_multiplier(score_diff):
@@ -235,12 +230,12 @@ def compute_historical_baselines(cur_year, fbs_teams):
                 k_adj_h = get_opp_k_multiplier(hist_elo[a])
                 k_adj_a = get_opp_k_multiplier(hist_elo[h])
                 hist_elo[h] += max(6.0, 64.0 * k_adj_h * ea * mult)
-                hist_elo[a] += -96.0 * k_adj_a * ea * mult
+                hist_elo[a] += -64.0 * k_adj_a * ea * mult
             elif ap > hp:
                 k_adj_a = get_opp_k_multiplier(hist_elo[h])
                 k_adj_h = get_opp_k_multiplier(hist_elo[a])
                 hist_elo[a] += max(6.0, 64.0 * k_adj_a * eh * mult)
-                hist_elo[h] += -96.0 * k_adj_h * eh * mult
+                hist_elo[h] += -64.0 * k_adj_h * eh * mult
 
     venue_stats = {}
     for team in fbs_teams:
@@ -333,7 +328,7 @@ def run_season_pipeline(year, fbs_teams, venue_stats, regressed_priors, prior_di
             k_adj_h = get_opp_k_multiplier(elo[a])
             k_adj_a = get_opp_k_multiplier(elo[h])
             delta_w = max(6.0, 64.0 * k_adj_h * ea * mult)
-            delta_l = -96.0 * k_adj_a * ea * mult
+            delta_l = -64.0 * k_adj_a * ea * mult
             elo[h] += delta_w
             elo[a] += delta_l
             prior_elo[h] += delta_w
@@ -344,7 +339,7 @@ def run_season_pipeline(year, fbs_teams, venue_stats, regressed_priors, prior_di
             k_adj_a = get_opp_k_multiplier(elo[h])
             k_adj_h = get_opp_k_multiplier(elo[a])
             delta_w = max(6.0, 64.0 * k_adj_a * eh * mult)
-            delta_l = -96.0 * k_adj_h * eh * mult
+            delta_l = -64.0 * k_adj_h * eh * mult
             elo[a] += delta_w
             elo[h] += delta_l
             prior_elo[a] += delta_w
@@ -397,9 +392,10 @@ def run_season_pipeline(year, fbs_teams, venue_stats, regressed_priors, prior_di
             "record": f"{records[t]['w']}–{records[t]['l']}",
             "full_score": round(full_score, 1),
             "ap_rank": ap_r if ap_r is not None else "-",
-            "delta_wk": 0.0,  # Will be populated correctly in the main loop
+            "delta_wk": 0.0,
             "sos": round(sos_val, 1),
             "sos_rank": sos_ranks[t],
+            "sos_offset": round(sos_offset, 1),
             "conf_4yr": round(c_4yr, 1),
             "conf_1yr_prior": round(c_1yr_prior, 1),
             "conf_cur": round(c_cur, 1),
@@ -457,12 +453,12 @@ def build_multiyear_index(cur_year, fbs_teams, venue_stats):
                 rec[h]["w"] += 1
                 rec[a]["l"] += 1
                 elo[h] += max(6.0, 64.0 * ea * mult)
-                elo[a] += -96.0 * ea * mult
+                elo[a] += -64.0 * ea * mult
             elif ap > hp:
                 rec[a]["w"] += 1
                 rec[h]["l"] += 1
                 elo[a] += max(6.0, 64.0 * eh * mult)
-                elo[h] += -96.0 * eh * mult
+                elo[h] += -64.0 * eh * mult
 
         for t in fbs_teams:
             opps = rec[t]["opps"]
@@ -525,7 +521,6 @@ def main():
         prev_manifest_weeks.append(w)
         prev_data_w, _ = run_season_pipeline(PREV_YEAR, fbs_teams, venue_stats, prev_prev_priors, prev_prev_diag, conf_base_4yr, max_week=w)
         
-        # Calculate Delta Wk
         for r in prev_data_w:
             t = r["team"]
             prev_score = prev_week_scores.get(t, r["full_score"])
@@ -554,7 +549,6 @@ def main():
         manifest_cur_weeks.append(w)
         cur_data_w, _ = run_season_pipeline(CUR_YEAR, fbs_teams, venue_stats, regressed_priors, prior_diagnostics, conf_base_4yr, max_week=w)
         
-        # Calculate Delta Wk
         for r in cur_data_w:
             t = r["team"]
             prev_score = cur_week_scores.get(t, r["full_score"])

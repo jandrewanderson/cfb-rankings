@@ -93,7 +93,7 @@
                                        ──> Opponent Quality Mult: K_adj = clamp(1.0 + (Elo_Opp - 1500)/600, 0.65, 1.35)
                                        ──> 1-Pt Margin Slider: Mult = 1.00 + 0.25 * (ln(|ΔScore|) / ln(45))
                                        ──> Win Update: ΔElo = max(+6.0, +64.0 * K_adj * (1 - E) * Mult)
-                                       ──> Loss Update: ΔElo = min(-12.0, -128.0 * K_adj * (E) * Mult)
+                                       ──> Loss Update: ΔElo = -64.0 * K_adj * (E) * Mult
                                                      │
                                                      ▼
 [ 4. Dynamic Two-Stage Prior Decay ]    ──> Weeks 1–12: W_Prior = 0.05 + 0.30 * ((12 - w)/11)^2
@@ -204,17 +204,17 @@
           </div>
         </div>
 
-        <!-- 1.5 Clamped Asymmetric Updates -->
+        <!-- 1.5 Symmetrical Updates -->
         <div class="space-y-4 bg-slate-950 p-6 rounded-xl border border-slate-800">
-          <h3 class="text-lg font-bold text-rose-400">1.5 Clamped Asymmetric Updates ($2\times$ Loss Tax)</h3>
+          <h3 class="text-lg font-bold text-rose-400">1.5 Symmetrical Updates ($K=64.0$, No Loss Floor)</h3>
           <div class="bg-slate-900/60 p-4 rounded-lg text-center font-mono text-sm space-y-1">
             $$\Delta \text{Elo}_{\text{Win}} = \max\left(\mathbf{+6.0}, \; +64.0 \cdot K_{\text{adj}} \cdot (1.0 - E_{\text{Winner}}) \cdot \text{Mult}\right)$$
-            $$\Delta \text{Elo}_{\text{Loss}} = \min\left(\mathbf{-12.0}, \; -128.0 \cdot K_{\text{adj}} \cdot (E_{\text{Loser}}) \cdot \text{Mult}\right)$$
+            $$\Delta \text{Elo}_{\text{Loss}} = -64.0 \cdot K_{\text{adj}} \cdot (E_{\text{Loser}}) \cdot \text{Mult}$$
           </div>
           <div class="space-y-2 text-sm text-slate-300 leading-relaxed">
             <h4 class="font-bold text-white text-xs uppercase tracking-wider">Detailed Explanation</h4>
             <p>
-              To ensure "a win is always a win," every victory is guaranteed a minimum gain of $+6.0$ points. Maintaining the exact $2\times$ loss penalty, any loss is guaranteed a minimum penalty of $-12.0$ points. Upset losses scale up to over $-100$ points.
+              To ensure "a win is always a win," every victory is guaranteed a minimum gain of $+6.0$ points. The penalty for losing is perfectly symmetrical to the base win coefficient ($K=64.0$). Losses are mathematically unbounded with no artificial floor, ensuring expected losses to elite teams naturally approach 0 points.
             </p>
             <h4 class="font-bold text-white text-xs uppercase tracking-wider pt-2">Concrete Example</h4>
             <p class="text-slate-400 text-xs">
@@ -246,15 +246,16 @@
 
         <!-- 1.7 Master Composite & Loss Tax -->
         <div class="space-y-4 bg-slate-950 p-6 rounded-xl border border-slate-800">
-          <h3 class="text-lg font-bold text-emerald-400">1.7 Master Composite Score & Loss Tax</h3>
+          <h3 class="text-lg font-bold text-emerald-400">1.7 Master Composite Score, SOS Offset & Loss Tax</h3>
           <div class="bg-slate-900/60 p-4 rounded-lg text-center font-mono text-sm space-y-2">
-            $$\text{Composite Score} = (1.0 - W_{\text{Prior}}(w)) \cdot (\text{Pure Elo}) + W_{\text{Prior}}(w) \cdot (\text{Regressed Prior}) + 0.10 \cdot (\text{SOS} - 1500.0)$$
+            $$\text{Offset}_{\text{sos}} = 0.10 \times (\text{Avg}_{\text{opponents}} - 1500.0)$$
+            $$\text{Composite Score} = (1.0 - W_{\text{Prior}}(w)) \cdot (\text{Pure Elo}) + W_{\text{Prior}}(w) \cdot (\text{Regressed Prior}) + \text{Offset}_{\text{sos}}$$
             $$\text{Full Power Score} = \text{Composite Score} \times \left(1.0 - 0.0075 \cdot \text{Losses}\right)$$
           </div>
           <div class="space-y-2 text-sm text-slate-300 leading-relaxed">
             <h4 class="font-bold text-white text-xs uppercase tracking-wider">Detailed Explanation</h4>
             <p>
-              Combines the active on-field Elo, the decaying Regressed Prior, and an unclamped Strength of Schedule offset. The composite score is then deflated by 0.75% for each loss suffered.
+              Combines the active on-field Elo, the decaying Regressed Prior, and an unclamped Strength of Schedule offset ($0.10 \times (\text{SOS} - 1500.0)$), which is also rendered as a dedicated column in the table. The composite score is then deflated by 0.75% for each loss suffered.
             </p>
             <h4 class="font-bold text-white text-xs uppercase tracking-wider pt-2">Concrete Example</h4>
             <p class="text-slate-400 text-xs">
@@ -316,13 +317,6 @@
             <p>
               When a user selects Start Year ($Y_{\text{start}}$) and End Year ($Y_{\text{end}}$), the client calculates arithmetic means across all sampled seasons. The client also identifies the team's Peak Season ($\max \text{Score}_y$) and Lowest Season ($\min \text{Score}_y$).
             </p>
-            <h4 class="font-bold text-white text-xs uppercase tracking-wider pt-2">Concrete Example</h4>
-            <p class="text-slate-400 text-xs">
-              Selecting 2022 to 2024 for a 3-year window:<br>
-              Scores: 2022 ($1720.4$), 2023 ($1735.1$), 2024 ($1718.5$).<br>
-              $\text{Era Avg Score} = (1720.4 + 1735.1 + 1718.5) / 3 = \mathbf{1724.7}$.<br>
-              Record: 11-2, 11-2, 12-2 $\rightarrow 34\text{ wins, } 6\text{ losses} \rightarrow \mathbf{85.0\% \text{ Win Pct}}$.
-            </p>
           </div>
         </div>
       </section>
@@ -366,13 +360,6 @@
             <p>
               Programs are regressed toward a 60/40 blend of their 4-year finish and conference strength. Blue-blood programs with high 4-year floors receive low regression rates ($18\%$), protecting their elite status. Outlier single-season spikes are regressed up to $42\%$ toward reality.
             </p>
-            <h4 class="font-bold text-white text-xs uppercase tracking-wider pt-2">Concrete Example</h4>
-            <p class="text-slate-400 text-xs">
-              Georgia entering 2026 ($\text{Score}_{t-1} = 1718.5$, $\bar{E}_{\text{4yr}} = 1748.2$, SEC $\text{Conf Base} = 1671.0$):<br>
-              $\text{Anchor} = (0.60 \times 1748.2) + (0.40 \times 1671.0) = 1048.92 + 668.40 = \mathbf{1717.32}$.<br>
-              Regression rate $R_i = \mathbf{0.200}$ ($20\%$).<br>
-              $\text{Regressed Prior} = (0.80 \times 1718.5) + (0.20 \times 1717.32) = 1374.80 + 343.46 = \mathbf{1718.3}$.
-            </p>
           </div>
         </div>
       </section>
@@ -413,7 +400,7 @@
             <div>• Opponent Scalers: $K_{\text{adj}}(\text{Vandy vs Bama}) = 1.0 + (1674 - 1500)/600 = \mathbf{1.290}$</div>
             <div>• Opponent Scalers: $K_{\text{adj}}(\text{Bama vs Vandy}) = 1.0 + (1450 - 1500)/600 = \mathbf{0.917}$</div>
             <div class="pt-2 text-emerald-400 font-bold">Vanderbilt Update: +64.0 * 1.290 * (1.0 - 0.2399) * 1.1057 = +69.34 Elo points</div>
-            <div class="text-rose-400 font-bold">Alabama Update: -128.0 * 0.917 * (0.7601) * 1.1057 = -98.66 Elo points</div>
+            <div class="text-rose-400 font-bold">Alabama Update: -64.0 * 0.917 * (0.7601) * 1.1057 = -49.33 Elo points</div>
           </div>
         </div>
       </section>
@@ -446,7 +433,6 @@
         const exportHeader = docClone.querySelector(".export-controls");
         if (exportHeader) exportHeader.remove();
 
-        // Reveal all panes in the downloaded document
         docClone.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('hidden'));
 
         const htmlHeader = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>CFB Mathematical Specification</title></head><body>";
