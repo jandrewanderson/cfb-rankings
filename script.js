@@ -137,7 +137,7 @@ async function loadRankings() {
   if (!loaded) {
     document.getElementById('tableBody').innerHTML = `
       <tr>
-        <td colspan="24" class="p-8 text-center text-slate-400">
+        <td colspan="25" class="p-8 text-center text-slate-400">
           <div class="text-rose-400 font-bold mb-2">Dataset not loaded</div>
           <div class="text-xs text-slate-500">Run python build_data.py to generate data.</div>
         </td>
@@ -287,6 +287,7 @@ function renderCurrentTable() {
       <th class="p-3">Delta Wk</th>
       <th class="p-3">SOS (Rank)</th>
       <th class="p-3">SOS Offset</th>
+      <th class="p-3">Pure SOS (Rank)</th>
       <th class="p-3">Conf</th>
       <th class="p-3">Conf 4-Yr</th>
       <th class="p-3">Conf 1-Yr w/ Prior</th>
@@ -327,6 +328,7 @@ function renderCurrentTable() {
         <td class="p-3 font-mono font-semibold ${r.sos_offset > 0 ? 'text-emerald-400' : (r.sos_offset < 0 ? 'text-rose-400' : 'text-slate-400')}">
           ${r.sos_offset > 0 ? '+' + r.sos_offset.toFixed(1) : r.sos_offset.toFixed(1)}
         </td>
+        <td class="p-3 text-slate-400 font-mono">${(r.pure_sos || 0).toFixed(1)} <span class="text-[10px] text-slate-500">(#${r.pure_sos_rank || '-'})</span></td>
         <td class="p-3 text-slate-300 font-semibold">${r.conf}</td>
         <td class="p-3 text-slate-400 font-mono">${r.conf_4yr.toFixed(1)}</td>
         <td class="p-3 text-slate-400 font-mono">${r.conf_1yr_prior.toFixed(1)}</td>

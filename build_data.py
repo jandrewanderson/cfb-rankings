@@ -102,9 +102,9 @@ def get_fbs_teams_and_confs(year):
     sys.exit(1)
 
 def extract_game(g):
-    if g.get("completed", False) is False:
-        return None
-
+    # We DO NOT return None if completed is False anymore!
+    # We need the full schedule to calculate unplayed SOS.
+    
     h = g.get("home_team") or g.get("homeTeam")
     a = g.get("away_team") or g.get("awayTeam")
     hp = g.get("home_points") if g.get("home_points") is not None else g.get("homePoints")
@@ -112,12 +112,18 @@ def extract_game(g):
     wk = g.get("week", 1)
     neutral = g.get("neutral_site", False) or g.get("neutralSite", False)
     gid = g.get("id", 0)
+    completed = g.get("completed", False)
 
-    if h and a and hp is not None and ap is not None:
-        hp_int = int(hp)
-        ap_int = int(ap)
-        if hp_int == 0 and ap_int == 0:
-            return None
+    if h and a:
+        hp_int = int(hp) if hp is not None else None
+        ap_int = int(ap) if ap is not None else None
+        
+        # If the game is marked completed but has no score, it's not actually completed.
+        if completed and (hp_int is None or ap_int is None):
+            completed = False
+
+        if completed and hp_int == 0 and ap_int == 0:
+             return None # Ignore 0-0 ties / cancellations that are marked complete
 
         return {
             "id": gid,
@@ -127,7 +133,7 @@ def extract_game(g):
             "home_points": hp_int,
             "away_points": ap_int,
             "neutral_site": bool(neutral),
-            "completed": True
+            "completed": completed
         }
     return None
 
@@ -136,6 +142,7 @@ def get_year_games(target_year):
     os.makedirs(cache_dir, exist_ok=True)
     cache_path = os.path.join(cache_dir, f"games_{target_year}.json")
 
+    # Only load from cache if it's a past year where the schedule is fully set in stone
     if target_year < CUR_YEAR and os.path.exists(cache_path):
         with open(cache_path, "r", encoding="utf-8") as f:
             return json.load(f)
@@ -180,7 +187,7 @@ def get_ap_polls(target_year):
     return ap_map
 
 # =====================================================================
-# V3.4 MATHEMATICS (Huber-Style Hybrid SOS & Variable Loss Tax)
+# V3.5 MATHEMATICS (Proportional Decay Future Blended SOS & Variable Loss Tax)
 # =====================================================================
 
 def get_margin_multiplier(score_diff):
@@ -208,8 +215,9 @@ def compute_historical_baselines(cur_year, fbs_teams):
         for g in games:
             h, a = g.get("home_team"), g.get("away_team")
             hp, ap = g.get("home_points"), g.get("away_points")
+            completed = g.get("completed", False)
             
-            if hp is None or ap is None:
+            if not completed or hp is None or ap is None:
                 continue
             if h not in fbs_teams and a not in fbs_teams:
                 continue
@@ -262,12 +270,17 @@ def compute_historical_baselines(cur_year, fbs_teams):
 
     conf_base_4yr = {}
     for conf in set(fbs_teams.values()):
+        # HARDCODE INDEPENDENT OVERRIDE
+        if conf == "FBS Independents":
+             conf_base_4yr[conf] = 1450.0
+             continue
+
         conf_teams = [t for t, c in fbs_teams.items() if c == conf]
-        if conf_teams:
+        if len(conf_teams) > 2:
             avg_elo = sum(hist_elo.get(t, 1500.0) for t in conf_teams) / len(conf_teams)
             conf_base_4yr[conf] = round(avg_elo, 1)
         else:
-            conf_base_4yr[conf] = 1400.0
+            conf_base_4yr[conf] = 1450.0 # Fallback for bizarre micro-conferences
 
     return venue_stats, conf_base_4yr
 
@@ -281,24 +294,30 @@ def get_prior_decay_weight(w):
 def ensure_team_in_elo(team, elo_dict, rec_dict):
     if team not in elo_dict:
         elo_dict[team] = 1200.0
-        rec_dict[team] = {"w": 0, "l": 0, "opps": [], "loss_elos": []}
+        rec_dict[team] = {
+            "w": 0, 
+            "l": 0, 
+            "played_opps": [], 
+            "unplayed_opps": [],
+            "loss_elos": []
+        }
 
 def run_season_pipeline(year, fbs_teams, venue_stats, regressed_priors, prior_diagnostics, conf_base_4yr, max_week=None):
     all_games = get_year_games(year)
     ap_polls = get_ap_polls(year)
     
-    if max_week is not None:
-        games = [g for g in all_games if g.get("week", 1) <= max_week]
-    else:
-        games = all_games
-
     elo = {t: 1500.0 for t in fbs_teams}
     prior_elo = {t: regressed_priors.get(t, 1500.0) for t in fbs_teams}
-    records = {t: {"w": 0, "l": 0, "opps": [], "loss_elos": []} for t in fbs_teams}
+    records = {t: {"w": 0, "l": 0, "played_opps": [], "unplayed_opps": [], "loss_elos": []} for t in fbs_teams}
 
-    for g in games:
+    active_week = max_week if max_week is not None else 12
+
+    # Step 1: Iterate through ALL games to separate played vs unplayed and execute played games
+    for g in all_games:
         h, a = g.get("home_team"), g.get("away_team")
         hp, ap = g.get("home_points"), g.get("away_points")
+        wk = g.get("week", 1)
+        completed = g.get("completed", False)
         
         if h not in fbs_teams and a not in fbs_teams:
             continue
@@ -309,51 +328,87 @@ def run_season_pipeline(year, fbs_teams, venue_stats, regressed_priors, prior_di
         if h not in prior_elo: prior_elo[h] = 1200.0
         if a not in prior_elo: prior_elo[a] = 1200.0
 
-        records[h]["opps"].append(a)
-        records[a]["opps"].append(h)
+        # Categorize the game based on the requested max_week horizon
+        if wk <= active_week and completed and hp is not None and ap is not None:
+             # PLAYED GAME - Execute standard math
+             records[h]["played_opps"].append(a)
+             records[a]["played_opps"].append(h)
 
-        is_neutral = g.get("neutral_site", False)
-        d_h = 0.0 if is_neutral else venue_stats.get(h, {}).get("d_h", 16.0)
-        d_a = 0.0 if is_neutral else venue_stats.get(a, {}).get("d_a", -16.0)
+             is_neutral = g.get("neutral_site", False)
+             d_h = 0.0 if is_neutral else venue_stats.get(h, {}).get("d_h", 16.0)
+             d_a = 0.0 if is_neutral else venue_stats.get(a, {}).get("d_a", -16.0)
 
-        eff_h = elo[h] + d_h
-        eff_a = elo[a] + d_a
-        eh = compute_win_expectancy(eff_h, eff_a)
-        ea = 1.0 - eh
-        mult = get_margin_multiplier(hp - ap)
+             eff_h = elo[h] + d_h
+             eff_a = elo[a] + d_a
+             eh = compute_win_expectancy(eff_h, eff_a)
+             ea = 1.0 - eh
+             mult = get_margin_multiplier(hp - ap)
 
-        if hp > ap:
-            records[h]["w"] += 1
-            records[a]["l"] += 1
-            records[a]["loss_elos"].append(elo[h])
-            k_adj_h = get_opp_k_multiplier(elo[a])
-            k_adj_a = get_opp_k_multiplier(elo[h])
-            delta_w = max(6.0, 64.0 * k_adj_h * ea * mult)
-            delta_l = -64.0 * k_adj_a * ea * mult
-            elo[h] += delta_w
-            elo[a] += delta_l
-            prior_elo[h] += delta_w
-            prior_elo[a] += delta_l
-        elif ap > hp:
-            records[a]["w"] += 1
-            records[h]["l"] += 1
-            records[h]["loss_elos"].append(elo[a])
-            k_adj_a = get_opp_k_multiplier(elo[h])
-            k_adj_h = get_opp_k_multiplier(elo[a])
-            delta_w = max(6.0, 64.0 * k_adj_a * eh * mult)
-            delta_l = -64.0 * k_adj_h * eh * mult
-            elo[a] += delta_w
-            elo[h] += delta_l
-            prior_elo[a] += delta_w
-            prior_elo[h] += delta_l
+             if hp > ap:
+                 records[h]["w"] += 1
+                 records[a]["l"] += 1
+                 records[a]["loss_elos"].append(elo[h])
+                 k_adj_h = get_opp_k_multiplier(elo[a])
+                 k_adj_a = get_opp_k_multiplier(elo[h])
+                 delta_w = max(6.0, 64.0 * k_adj_h * ea * mult)
+                 delta_l = -64.0 * k_adj_a * ea * mult
+                 elo[h] += delta_w
+                 elo[a] += delta_l
+                 prior_elo[h] += delta_w
+                 prior_elo[a] += delta_l
+             elif ap > hp:
+                 records[a]["w"] += 1
+                 records[h]["l"] += 1
+                 records[h]["loss_elos"].append(elo[a])
+                 k_adj_a = get_opp_k_multiplier(elo[h])
+                 k_adj_h = get_opp_k_multiplier(elo[a])
+                 delta_w = max(6.0, 64.0 * k_adj_a * eh * mult)
+                 delta_l = -64.0 * k_adj_h * eh * mult
+                 elo[a] += delta_w
+                 elo[h] += delta_l
+                 prior_elo[a] += delta_w
+                 prior_elo[h] += delta_l
+                 
+        else:
+             # UNPLAYED GAME (either in future week, or uncompleted)
+             records[h]["unplayed_opps"].append(a)
+             records[a]["unplayed_opps"].append(h)
 
-    sos_dict = {}
+
+    pure_sos_dict = {}
+    blended_sos_dict = {}
+
     for t in fbs_teams:
-        opps = records[t]["opps"]
-        sos_dict[t] = sum(elo[o] for o in opps) / len(opps) if opps else 1500.0
+        p_opps = records[t]["played_opps"]
+        u_opps = records[t]["unplayed_opps"]
+        
+        # Calculate Base Averages
+        avg_played = sum(elo[o] for o in p_opps) / len(p_opps) if p_opps else 1500.0
+        avg_unplayed = sum(elo[o] for o in u_opps) / len(u_opps) if u_opps else 1500.0
 
-    sos_sorted = sorted(fbs_teams.keys(), key=lambda t: sos_dict[t], reverse=True)
-    sos_ranks = {t: rank for rank, t in enumerate(sos_sorted, start=1)}
+        pure_sos_dict[t] = avg_played
+        
+        # 3% Decay Future SOS Blend Logic
+        n_played = len(p_opps)
+        
+        if n_played == 0:
+             # Preseason: SOS is bypassed anyway, just set to 1500
+             blended_sos_dict[t] = 1500.0
+        elif active_week > 12:
+             # Postseason: Future unplayed games carry 0 weight
+             blended_sos_dict[t] = avg_played
+        else:
+             # Regular Season: 3% decay rule
+             w_unplayed = max(0.0, 0.36 - (0.03 * n_played))
+             w_played = 1.0 - w_unplayed
+             blended_sos_dict[t] = (w_played * avg_played) + (w_unplayed * avg_unplayed)
+
+
+    pure_sos_sorted = sorted(fbs_teams.keys(), key=lambda t: pure_sos_dict[t], reverse=True)
+    pure_sos_ranks = {t: rank for rank, t in enumerate(pure_sos_sorted, start=1)}
+
+    blended_sos_sorted = sorted(fbs_teams.keys(), key=lambda t: blended_sos_dict[t], reverse=True)
+    blended_sos_ranks = {t: rank for rank, t in enumerate(blended_sos_sorted, start=1)}
 
     pure_sorted = sorted(fbs_teams.keys(), key=lambda t: elo[t], reverse=True)
     pure_ranks = {t: rank for rank, t in enumerate(pure_sorted, start=1)}
@@ -361,23 +416,28 @@ def run_season_pipeline(year, fbs_teams, venue_stats, regressed_priors, prior_di
     prior_sorted = sorted(fbs_teams.keys(), key=lambda t: prior_elo[t], reverse=True)
     prior_ranks = {t: rank for rank, t in enumerate(prior_sorted, start=1)}
 
-    active_week = max_week if max_week is not None else 12
     w_prior = get_prior_decay_weight(active_week)
 
     results = []
     for t in fbs_teams:
         pure_val = elo[t]
         prior_val = prior_elo[t]
-        sos_val = sos_dict[t]
+        pure_sos_val = pure_sos_dict[t]
+        blended_sos_val = blended_sos_dict[t]
         losses = records[t]["l"]
+        n_played = len(records[t]["played_opps"])
 
-        # Huber-Style Hybrid SOS Offset
-        sos_diff = sos_val - 1500.0
-        sos_sign = 1.0 if sos_diff >= 0 else -1.0
-        exp_part = 35.0 * sos_sign * ((abs(sos_diff) / 50.0) ** 2.0)
-        clamped_exp = max(-50.0, min(50.0, exp_part))
-        linear_part = 0.10 * sos_diff
-        sos_offset = clamped_exp + linear_part
+        # Preseason bypass
+        if n_played == 0:
+             sos_offset = 0.0
+        else:
+             # Huber-Style Hybrid SOS Offset (Clamp 50, Linear 0.10) using Blended SOS
+             sos_diff = blended_sos_val - 1500.0
+             sos_sign = 1.0 if sos_diff >= 0 else -1.0
+             exp_part = 35.0 * sos_sign * ((abs(sos_diff) / 50.0) ** 2.0)
+             clamped_exp = max(-50.0, min(50.0, exp_part))
+             linear_part = 0.10 * sos_diff
+             sos_offset = clamped_exp + linear_part
 
         composite = ((1.0 - w_prior) * pure_val) + (w_prior * prior_val) + sos_offset
 
@@ -392,7 +452,7 @@ def run_season_pipeline(year, fbs_teams, venue_stats, regressed_priors, prior_di
         full_score = composite * loss_multiplier
 
         conf = fbs_teams[t]
-        c_4yr = conf_base_4yr.get(conf, 1400.0)
+        c_4yr = conf_base_4yr.get(conf, 1450.0) # independent baseline is 1450
         c_1yr_prior = c_4yr - 8.0
         c_cur = c_4yr - 27.0
 
@@ -412,9 +472,11 @@ def run_season_pipeline(year, fbs_teams, venue_stats, regressed_priors, prior_di
             "ap_rank": ap_r if ap_r is not None else "-",
             "delta_wk": 0.0,
             "loss_tax_pct": round(loss_tax_pct, 2),
-            "sos": round(sos_val, 1),
-            "sos_rank": sos_ranks[t],
+            "sos": round(blended_sos_val, 1),
+            "sos_rank": blended_sos_ranks[t],
             "sos_offset": round(sos_offset, 1),
+            "pure_sos": round(pure_sos_val, 1),
+            "pure_sos_rank": pure_sos_ranks[t],
             "conf_4yr": round(c_4yr, 1),
             "conf_1yr_prior": round(c_1yr_prior, 1),
             "conf_cur": round(c_cur, 1),
@@ -433,7 +495,7 @@ def run_season_pipeline(year, fbs_teams, venue_stats, regressed_priors, prior_di
             "reg_rate_pct": round(diag["reg_rate"], 1),
             "prior_shift": round(diag["prior_shift"], 1),
             "w_prior_pct": round(w_prior * 100.0, 1),
-            "opponents": records[t]["opps"]
+            "opponents": records[t]["played_opps"]
         })
 
     results.sort(key=lambda x: x["full_score"], reverse=True)
@@ -450,19 +512,22 @@ def build_multiyear_index(cur_year, fbs_teams, venue_stats):
     for y in range(start_year, cur_year + 1):
         games = get_year_games(y)
         elo = {t: 1500.0 for t in fbs_teams}
-        rec = {t: {"w": 0, "l": 0, "opps": [], "loss_elos": []} for t in fbs_teams}
+        rec = {t: {"w": 0, "l": 0, "played_opps": [], "unplayed_opps": [], "loss_elos": []} for t in fbs_teams}
 
         for g in games:
             h, a = g.get("home_team"), g.get("away_team")
             hp, ap = g.get("home_points"), g.get("away_points")
+            completed = g.get("completed", False)
+            if not completed or hp is None or ap is None:
+                 continue
             if h not in fbs_teams and a not in fbs_teams:
                 continue
             
             ensure_team_in_elo(h, elo, rec)
             ensure_team_in_elo(a, elo, rec)
             
-            rec[h]["opps"].append(a)
-            rec[a]["opps"].append(h)
+            rec[h]["played_opps"].append(a)
+            rec[a]["played_opps"].append(h)
             
             mult = get_margin_multiplier(hp - ap)
             eh = compute_win_expectancy(elo[h], elo[a])
@@ -482,7 +547,7 @@ def build_multiyear_index(cur_year, fbs_teams, venue_stats):
                 elo[h] += -64.0 * eh * mult
 
         for t in fbs_teams:
-            opps = rec[t]["opps"]
+            opps = rec[t]["played_opps"]
             avg_sos = sum(elo[o] for o in opps) / len(opps) if opps else 1500.0
             
             loss_multiplier = 1.0
@@ -526,7 +591,7 @@ def main():
         prev_raw = prev_elo.get(t, 1500.0)
         e_4yr = prev_raw
         conf = fbs_teams[t]
-        conf_base = conf_base_4yr.get(conf, 1400.0)
+        conf_base = conf_base_4yr.get(conf, 1450.0) # independent baseline is 1450
         anchor = (0.60 * e_4yr) + (0.40 * conf_base)
         r_rate = max(0.18, min(0.42, 0.28 - 0.035 * ((e_4yr - 1500.0) / 100.0) + 0.050 * (abs(prev_raw - e_4yr) / 100.0)))
         reg_prior = ((1.0 - r_rate) * prev_raw) + (r_rate * anchor)
