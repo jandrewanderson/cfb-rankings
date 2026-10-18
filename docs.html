@@ -31,7 +31,7 @@
       <div>
         <div class="flex items-center gap-2 mb-1">
           <span class="bg-blue-600/20 text-blue-400 text-xs font-bold px-3 py-1 rounded-full border border-blue-500/30 uppercase tracking-widest">Official Mathematical Specification</span>
-          <span class="text-xs text-slate-500 font-mono">Version 3.0 | 134 FBS Engine</span>
+          <span class="text-xs text-slate-500 font-mono">Version 3.3 | 134 FBS Engine</span>
         </div>
         <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight">Mathematical Architecture & Rating Engine</h1>
         <p class="text-slate-400 text-sm mt-1">Exhaustive operational mechanics, chronological derivations, raw formulas, and worked proofs.</p>
@@ -61,7 +61,7 @@
             The engine ingests authentic play-by-play and game summary data directly from the <strong>College Football Data API (CFBD)</strong> via automated endpoints (<code class="text-blue-400 font-mono text-xs">/games</code> and <code class="text-blue-400 font-mono text-xs">/teams/fbs</code>).
           </p>
           <p>
-            The engine evaluates college football calendar seasons dynamically: when executing during January or February (e.g., the National Championship Game in January 2027), the pipeline automatically maps post-New Year postseason matchups directly into the preceding fall campaign (2026) without data fragmentation.
+            The engine evaluates college football calendar seasons dynamically: when executing during January or February, the pipeline automatically maps post-New Year postseason matchups directly into the preceding fall campaign without data fragmentation.
           </p>
         </div>
         <div class="space-y-3">
@@ -100,9 +100,9 @@
                                        ──> Weeks 12–16: W_Prior = 0.05 * ((16 - w)/4)^1.5  (0% at Wk 16)
                                                      │
                                                      ▼
-[ 5. Master Composite & Standings ]     ──> Unclamped Live SOS Offset = +0.10 * (SOS - 1500.0)
+[ 5. Master Composite & Standings ]     ──> Non-Linear SOS Offset = 35.0 * sign(ΔSOS) * (|ΔSOS| / 50.0)^2.0
                                        ──> Composite = (1 - W_Prior)*Pure Elo + W_Prior*Regressed Prior + SOS Offset
-                                       ──> Full Power Score = Composite * (1.0 - 0.0075 * Losses)
+                                       ──> Full Power Score = Composite * ∏ (1.0 - 0.0075 * QualityFactor_loss)
 </pre>
         </div>
       </div>
@@ -136,7 +136,7 @@
           <div class="space-y-2 text-sm text-slate-300 leading-relaxed">
             <h4 class="font-bold text-white text-xs uppercase tracking-wider">Detailed Explanation</h4>
             <p>
-              Every FBS program starts Week 1 at exactly $1500.0$ on-field Elo. In Version 3.0, <strong>Pure Score is defined strictly as Pure Team Elo</strong>. No conference foundation points are added. This ensures that early wins against FCS or low-tier teams do not inherit artificial league boosts.
+              Every FBS program starts Week 1 at exactly $1500.0$ on-field Elo. In Version 3.3, <strong>Pure Score is defined strictly as Pure Team Elo</strong>. No conference foundation points are added. This ensures that early wins against FCS or low-tier teams do not inherit artificial league boosts.
             </p>
             <h4 class="font-bold text-white text-xs uppercase tracking-wider pt-2">Concrete Example</h4>
             <p class="text-slate-400 text-xs">
@@ -154,7 +154,7 @@
           <div class="space-y-2 text-sm text-slate-300 leading-relaxed">
             <h4 class="font-bold text-white text-xs uppercase tracking-wider">Detailed Explanation</h4>
             <p>
-              Before game kickoff, each team's on-field rating is modified by venue difficulty. The home team receives their venue boost $\delta_H \ge 0.0$, while the visiting team receives their road penalty $\delta_A \le 0.0$. On neutral fields, both $\delta = 0.0$. Win expectancy ($E$) represents the logistic probability of victory.
+              Before game kickoff, each team's on-field rating is modified by venue difficulty. The home team receives their venue boost $\delta_H \ge 0.0$, while the visiting team receives their road penalty $\delta_A \le 0.0$. On neutral fields, both $\delta = 0.0$. Win expectancy ($E$) represents the logistic probability of victory based on the <strong>full effective Elo</strong> (including home/away deltas).
             </p>
             <h4 class="font-bold text-white text-xs uppercase tracking-wider pt-2">Concrete Example</h4>
             <p class="text-slate-400 text-xs">
@@ -248,23 +248,30 @@
         <div class="space-y-4 bg-slate-950 p-6 rounded-xl border border-slate-800">
           <h3 class="text-lg font-bold text-emerald-400">1.7 Master Composite Score, SOS Offset & Loss Tax</h3>
           <div class="bg-slate-900/60 p-4 rounded-lg text-center font-mono text-sm space-y-2">
-            $$\text{Offset}_{\text{sos}} = 0.10 \times (\text{Avg}_{\text{opponents}} - 1500.0)$$
+            $$\text{Offset}_{\text{sos}} = 35.0 \times \text{sign}(\text{SOS} - 1500.0) \times \left(\frac{|\text{SOS} - 1500.0|}{50.0}\right)^{2.0}$$
+            <br>
             $$\text{Composite Score} = (1.0 - W_{\text{Prior}}(w)) \cdot (\text{Pure Elo}) + W_{\text{Prior}}(w) \cdot (\text{Regressed Prior}) + \text{Offset}_{\text{sos}}$$
-            $$\text{Full Power Score} = \text{Composite Score} \times \left(1.0 - 0.0075 \cdot \text{Losses}\right)$$
+            <br>
+            $$\text{QualityFactor}_{\text{loss}} = \frac{2.0}{1.0 + 10^{\frac{\text{OppElo} - 1500.0}{400.0}}}$$
+            $$\text{Loss Multiplier} = \prod_{\text{losses}} \left(1.0 - 0.0075 \times \text{QualityFactor}_{\text{loss}}\right)$$
+            <br>
+            $$\text{Full Power Score} = \text{Composite Score} \times \text{Loss Multiplier}$$
           </div>
           <div class="space-y-2 text-sm text-slate-300 leading-relaxed">
             <h4 class="font-bold text-white text-xs uppercase tracking-wider">Detailed Explanation</h4>
             <p>
-              Combines the active on-field Elo, the decaying Regressed Prior, and an unclamped Strength of Schedule offset ($0.10 \times (\text{SOS} - 1500.0)$), which is also rendered as a dedicated column in the table. The composite score is then deflated by 0.75% for each loss suffered.
+              Version 3.3 replaces linear SOS scaling with an aggressive non-linear power curve ($2.0$ squared exponent, $50.0$ denominator, and $35.0$ multiplier), ensuring that elite gauntlets receive massive upward leverage (easily +75 points or more) while weak schedules are heavily penalized.
+              Furthermore, losses are no longer penalized by a flat $0.75\%$; instead, the loss penalty scales dynamically via a logistic curve based on the strength of the opponent. Losing to an elite powerhouse minimizes the penalty, while losing to a weak opponent extracts a maximum $0.75\%$ tax.
             </p>
             <h4 class="font-bold text-white text-xs uppercase tracking-wider pt-2">Concrete Example</h4>
             <p class="text-slate-400 text-xs">
-              BYU in Week 6 (5–0 record, Pure Elo $= 1589.4$, Regressed Prior $= 1628.5$, SOS $= 1492.6$, $W_{\text{Prior}} = 0.139$):<br>
-              • On-Field Term: $(1 - 0.139) \times 1589.4 = 0.861 \times 1589.4 = \mathbf{1368.47}$<br>
-              • Prior Term: $0.139 \times 1628.5 = \mathbf{226.36}$<br>
-              • SOS Offset: $0.10 \times (1492.6 - 1500.0) = 0.10 \times (-7.4) = \mathbf{-0.74}$<br>
-              • Composite Score: $1368.47 + 226.36 - 0.74 = \mathbf{1594.09}$<br>
-              • Loss Tax ($0$ losses): $1594.09 \times 1.0 = \mathbf{1594.1\text{ Full Power Score}}$.
+              Texas in Week 6 (4–2 record, Pure Elo $= 1538.3$, Regressed Prior $= 1763.9$, SOS $= 1584.2$, $W_{\text{Prior}} = 0.139$):<br>
+              • On-Field Term: $(1 - 0.139) \times 1538.3 = \mathbf{1324.47}$<br>
+              • Prior Term: $0.139 \times 1763.9 = \mathbf{245.18}$<br>
+              • SOS Offset: $35.0 \times (84.2 / 50.0)^{2.0} = \mathbf{+99.25}$<br>
+              • Composite Score: $1324.47 + 245.18 + 99.25 = \mathbf{1668.90}$<br>
+              • Variable Loss Tax Multiplier (2 Elite Losses): $\approx \mathbf{0.9895}$ ($1.05\%$ total penalty)<br>
+              • Full Power Score: $1668.90 \times 0.9895 = \mathbf{1651.4}$.
             </p>
           </div>
         </div>
@@ -317,6 +324,13 @@
             <p>
               When a user selects Start Year ($Y_{\text{start}}$) and End Year ($Y_{\text{end}}$), the client calculates arithmetic means across all sampled seasons. The client also identifies the team's Peak Season ($\max \text{Score}_y$) and Lowest Season ($\min \text{Score}_y$).
             </p>
+            <h4 class="font-bold text-white text-xs uppercase tracking-wider pt-2">Concrete Example</h4>
+            <p class="text-slate-400 text-xs">
+              Selecting 2022 to 2024 for a 3-year window:<br>
+              Scores: 2022 ($1720.4$), 2023 ($1735.1$), 2024 ($1718.5$).<br>
+              $\text{Era Avg Score} = (1720.4 + 1735.1 + 1718.5) / 3 = \mathbf{1724.7}$.<br>
+              Record: 11-2, 11-2, 12-2 $\rightarrow 34\text{ wins, } 6\text{ losses} \rightarrow \mathbf{85.0\% \text{ Win Pct}}$.
+            </p>
           </div>
         </div>
       </section>
@@ -342,7 +356,7 @@
           <div class="space-y-2 text-sm text-slate-300 leading-relaxed">
             <h4 class="font-bold text-white text-xs uppercase tracking-wider">Detailed Explanation</h4>
             <p>
-              In Version 3.0, the starting seed from the preceding year is strictly the program's final on-field Pure Elo. No conference points are added, ensuring the offseason bridge begins from authentic achievement.
+              In Version 3.3, the starting seed from the preceding year is strictly the program's final on-field Pure Elo. No conference points are added, ensuring the offseason bridge begins from authentic achievement.
             </p>
           </div>
         </div>
@@ -359,6 +373,13 @@
             <h4 class="font-bold text-white text-xs uppercase tracking-wider">Detailed Explanation</h4>
             <p>
               Programs are regressed toward a 60/40 blend of their 4-year finish and conference strength. Blue-blood programs with high 4-year floors receive low regression rates ($18\%$), protecting their elite status. Outlier single-season spikes are regressed up to $42\%$ toward reality.
+            </p>
+            <h4 class="font-bold text-white text-xs uppercase tracking-wider pt-2">Concrete Example</h4>
+            <p class="text-slate-400 text-xs">
+              Georgia entering 2026 ($\text{Score}_{t-1} = 1718.5$, $\bar{E}_{\text{4yr}} = 1748.2$, SEC $\text{Conf Base} = 1671.0$):<br>
+              $\text{Anchor} = (0.60 \times 1748.2) + (0.40 \times 1671.0) = 1048.92 + 668.40 = \mathbf{1717.32}$.<br>
+              Regression rate $R_i = \mathbf{0.200}$ ($20\%$).<br>
+              $\text{Regressed Prior} = (0.80 \times 1718.5) + (0.20 \times 1717.32) = 1374.80 + 343.46 = \mathbf{1718.3}$.
             </p>
           </div>
         </div>

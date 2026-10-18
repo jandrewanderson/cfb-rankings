@@ -137,7 +137,7 @@ async function loadRankings() {
   if (!loaded) {
     document.getElementById('tableBody').innerHTML = `
       <tr>
-        <td colspan="23" class="p-8 text-center text-slate-400">
+        <td colspan="24" class="p-8 text-center text-slate-400">
           <div class="text-rose-400 font-bold mb-2">Dataset not loaded</div>
           <div class="text-xs text-slate-500">Run python build_data.py to generate data.</div>
         </td>
@@ -282,6 +282,7 @@ function renderCurrentTable() {
       <th class="p-3">Full Score</th>
       <th class="p-3">Team</th>
       <th class="p-3">Record</th>
+      <th class="p-3">Loss Tax</th>
       <th class="p-3">AP Rank</th>
       <th class="p-3">Delta Wk</th>
       <th class="p-3">SOS (Rank)</th>
@@ -317,6 +318,7 @@ function renderCurrentTable() {
           ${r.team}
         </td>
         <td class="p-3 text-slate-200 font-mono">${r.record}</td>
+        <td class="p-3 font-mono ${r.loss_tax_pct > 0 ? 'text-rose-400 font-semibold' : 'text-slate-500'}">-${(r.loss_tax_pct || 0).toFixed(2)}%</td>
         <td class="p-3 text-slate-400 font-mono">${r.ap_rank !== '-' ? '#' + r.ap_rank : '-'}</td>
         <td class="p-3 font-mono font-semibold ${r.delta_wk > 0 ? 'text-emerald-400' : (r.delta_wk < 0 ? 'text-rose-400' : 'text-slate-400')}">
           ${r.delta_wk > 0 ? '+' + r.delta_wk.toFixed(1) : r.delta_wk.toFixed(1)}

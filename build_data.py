@@ -180,7 +180,7 @@ def get_ap_polls(target_year):
     return ap_map
 
 # =====================================================================
-# V3.0 MATHEMATICS & DYNAMIC BASELINES
+# V3.3 MATHEMATICS (Steeper Non-Linear SOS & Variable Loss Tax)
 # =====================================================================
 
 def get_margin_multiplier(score_diff):
@@ -281,7 +281,7 @@ def get_prior_decay_weight(w):
 def ensure_team_in_elo(team, elo_dict, rec_dict):
     if team not in elo_dict:
         elo_dict[team] = 1200.0
-        rec_dict[team] = {"w": 0, "l": 0, "opps": []}
+        rec_dict[team] = {"w": 0, "l": 0, "opps": [], "loss_elos": []}
 
 def run_season_pipeline(year, fbs_teams, venue_stats, regressed_priors, prior_diagnostics, conf_base_4yr, max_week=None):
     all_games = get_year_games(year)
@@ -294,7 +294,7 @@ def run_season_pipeline(year, fbs_teams, venue_stats, regressed_priors, prior_di
 
     elo = {t: 1500.0 for t in fbs_teams}
     prior_elo = {t: regressed_priors.get(t, 1500.0) for t in fbs_teams}
-    records = {t: {"w": 0, "l": 0, "opps": []} for t in fbs_teams}
+    records = {t: {"w": 0, "l": 0, "opps": [], "loss_elos": []} for t in fbs_teams}
 
     for g in games:
         h, a = g.get("home_team"), g.get("away_team")
@@ -325,6 +325,7 @@ def run_season_pipeline(year, fbs_teams, venue_stats, regressed_priors, prior_di
         if hp > ap:
             records[h]["w"] += 1
             records[a]["l"] += 1
+            records[a]["loss_elos"].append(elo[h])
             k_adj_h = get_opp_k_multiplier(elo[a])
             k_adj_a = get_opp_k_multiplier(elo[h])
             delta_w = max(6.0, 64.0 * k_adj_h * ea * mult)
@@ -336,6 +337,7 @@ def run_season_pipeline(year, fbs_teams, venue_stats, regressed_priors, prior_di
         elif ap > hp:
             records[a]["w"] += 1
             records[h]["l"] += 1
+            records[h]["loss_elos"].append(elo[a])
             k_adj_a = get_opp_k_multiplier(elo[h])
             k_adj_h = get_opp_k_multiplier(elo[a])
             delta_w = max(6.0, 64.0 * k_adj_a * eh * mult)
@@ -369,9 +371,22 @@ def run_season_pipeline(year, fbs_teams, venue_stats, regressed_priors, prior_di
         sos_val = sos_dict[t]
         losses = records[t]["l"]
 
-        sos_offset = 0.10 * (sos_val - 1500.0)
+        # Option 1: Steeper Non-Linear SOS Power Curve Offset (Exponent 2.0)
+        sos_diff = sos_val - 1500.0
+        sos_sign = 1.0 if sos_diff >= 0 else -1.0
+        sos_offset = 35.0 * sos_sign * ((abs(sos_diff) / 50.0) ** 2.0)
+
         composite = ((1.0 - w_prior) * pure_val) + (w_prior * prior_val) + sos_offset
-        full_score = composite * (1.0 - 0.0075 * losses)
+
+        # Option 2: Variable Quality-of-Loss Tax Multiplier
+        loss_multiplier = 1.0
+        for opp_elo in records[t]["loss_elos"]:
+            opp_quality_factor = 2.0 / (1.0 + 10.0 ** ((opp_elo - 1500.0) / 400.0))
+            single_loss_tax = 0.0075 * opp_quality_factor
+            loss_multiplier *= (1.0 - single_loss_tax)
+
+        loss_tax_pct = (1.0 - loss_multiplier) * 100.0
+        full_score = composite * loss_multiplier
 
         conf = fbs_teams[t]
         c_4yr = conf_base_4yr.get(conf, 1400.0)
@@ -393,6 +408,7 @@ def run_season_pipeline(year, fbs_teams, venue_stats, regressed_priors, prior_di
             "full_score": round(full_score, 1),
             "ap_rank": ap_r if ap_r is not None else "-",
             "delta_wk": 0.0,
+            "loss_tax_pct": round(loss_tax_pct, 2),
             "sos": round(sos_val, 1),
             "sos_rank": sos_ranks[t],
             "sos_offset": round(sos_offset, 1),
@@ -431,7 +447,7 @@ def build_multiyear_index(cur_year, fbs_teams, venue_stats):
     for y in range(start_year, cur_year + 1):
         games = get_year_games(y)
         elo = {t: 1500.0 for t in fbs_teams}
-        rec = {t: {"w": 0, "l": 0, "opps": []} for t in fbs_teams}
+        rec = {t: {"w": 0, "l": 0, "opps": [], "loss_elos": []} for t in fbs_teams}
 
         for g in games:
             h, a = g.get("home_team"), g.get("away_team")
@@ -452,18 +468,27 @@ def build_multiyear_index(cur_year, fbs_teams, venue_stats):
             if hp > ap:
                 rec[h]["w"] += 1
                 rec[a]["l"] += 1
+                rec[a]["loss_elos"].append(elo[h])
                 elo[h] += max(6.0, 64.0 * ea * mult)
                 elo[a] += -64.0 * ea * mult
             elif ap > hp:
                 rec[a]["w"] += 1
                 rec[h]["l"] += 1
+                rec[h]["loss_elos"].append(elo[a])
                 elo[a] += max(6.0, 64.0 * eh * mult)
                 elo[h] += -64.0 * eh * mult
 
         for t in fbs_teams:
             opps = rec[t]["opps"]
             avg_sos = sum(elo[o] for o in opps) / len(opps) if opps else 1500.0
-            score = elo[t] * (1.0 - 0.0075 * rec[t]["l"])
+            
+            loss_multiplier = 1.0
+            for opp_elo in rec[t]["loss_elos"]:
+                opp_quality_factor = 2.0 / (1.0 + 10.0 ** ((opp_elo - 1500.0) / 400.0))
+                single_loss_tax = 0.0075 * opp_quality_factor
+                loss_multiplier *= (1.0 - single_loss_tax)
+
+            score = elo[t] * loss_multiplier
             index_data[t][str(y)] = {
                 "score": round(score, 1),
                 "w": rec[t]["w"],
