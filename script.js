@@ -12,7 +12,9 @@ async function init() {
 
 async function loadManifest() {
   try {
-    const res = await fetch('data/manifest.json');
+    // Append timestamp to force cache bypass
+    const t = new Date().getTime();
+    const res = await fetch(`data/manifest.json?t=${t}`);
     if (res.ok) {
       manifest = await res.json();
       updateWeekDropdown();
@@ -24,7 +26,9 @@ async function loadManifest() {
 
 async function loadYearlyIndex() {
   try {
-    const res = await fetch('data/yearly_index.json');
+    // Append timestamp to force cache bypass
+    const t = new Date().getTime();
+    const res = await fetch(`data/yearly_index.json?t=${t}`);
     if (res.ok) {
       yearlyIndex = await res.json();
       populateEraSelectors();
@@ -43,6 +47,8 @@ function populateEraSelectors() {
   if (!sampleTeam) return;
 
   const years = Object.keys(yearlyIndex[sampleTeam]).map(Number).sort((a, b) => a - b);
+  if (years.length === 0) return;
+  
   const minYear = years[0];
   const maxYear = years[years.length - 1];
 
@@ -110,10 +116,13 @@ async function loadRankings() {
   const yr = document.getElementById('seasonSelect').value;
   const wkVal = document.getElementById('weekSelect').value;
   
+  // Unique timestamp to break CDN caching
+  const t = new Date().getTime();
+  
   const candidates = [
-    `data/${yr}/${wkVal}.json`,
-    `data/${yr}/latest.json`,
-    `data/latest.json`
+    `data/${yr}/${wkVal}.json?t=${t}`,
+    `data/${yr}/latest.json?t=${t}`,
+    `data/latest.json?t=${t}`
   ];
 
   let loaded = false;
@@ -264,6 +273,8 @@ function renderCurrentTable() {
   const badge = document.getElementById('priorWeightBadge');
   if (filtered.length > 0 && filtered[0].w_prior_pct !== undefined) {
     badge.textContent = `Active Prior Weight: ${filtered[0].w_prior_pct}%`;
+  } else {
+    badge.textContent = `Active Prior Weight: --%`;
   }
 
   const thead = document.getElementById('tableHead');
