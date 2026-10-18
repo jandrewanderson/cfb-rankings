@@ -180,7 +180,7 @@ def get_ap_polls(target_year):
     return ap_map
 
 # =====================================================================
-# V3.3 MATHEMATICS (Steeper Non-Linear SOS & Variable Loss Tax)
+# V3.4 MATHEMATICS (Huber-Style Hybrid SOS & Variable Loss Tax)
 # =====================================================================
 
 def get_margin_multiplier(score_diff):
@@ -371,14 +371,17 @@ def run_season_pipeline(year, fbs_teams, venue_stats, regressed_priors, prior_di
         sos_val = sos_dict[t]
         losses = records[t]["l"]
 
-        # Option 1: Steeper Non-Linear SOS Power Curve Offset (Exponent 2.0)
+        # Huber-Style Hybrid SOS Offset
         sos_diff = sos_val - 1500.0
         sos_sign = 1.0 if sos_diff >= 0 else -1.0
-        sos_offset = 35.0 * sos_sign * ((abs(sos_diff) / 50.0) ** 2.0)
+        exp_part = 35.0 * sos_sign * ((abs(sos_diff) / 50.0) ** 2.0)
+        clamped_exp = max(-50.0, min(50.0, exp_part))
+        linear_part = 0.10 * sos_diff
+        sos_offset = clamped_exp + linear_part
 
         composite = ((1.0 - w_prior) * pure_val) + (w_prior * prior_val) + sos_offset
 
-        # Option 2: Variable Quality-of-Loss Tax Multiplier
+        # Variable Quality-of-Loss Tax Multiplier
         loss_multiplier = 1.0
         for opp_elo in records[t]["loss_elos"]:
             opp_quality_factor = 2.0 / (1.0 + 10.0 ** ((opp_elo - 1500.0) / 400.0))

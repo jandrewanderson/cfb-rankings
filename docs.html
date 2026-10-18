@@ -31,10 +31,10 @@
       <div>
         <div class="flex items-center gap-2 mb-1">
           <span class="bg-blue-600/20 text-blue-400 text-xs font-bold px-3 py-1 rounded-full border border-blue-500/30 uppercase tracking-widest">Official Mathematical Specification</span>
-          <span class="text-xs text-slate-500 font-mono">Version 3.3 | 134 FBS Engine</span>
+          <span class="text-xs text-slate-500 font-mono">Version 3.4 | 134 FBS Engine</span>
         </div>
         <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight">Mathematical Architecture & Rating Engine</h1>
-        <p class="text-slate-400 text-sm mt-1">Exhaustive operational mechanics, chronological derivations, raw formulas, and worked proofs.</p>
+        <p class="text-slate-400 text-sm mt-1">Exhaustive operational mechanics, chronological derivations, raw formulas, and worked proofs.[cite: 7]</p>
       </div>
       <div class="flex items-center gap-3">
         <div class="flex gap-1.5 export-controls">
@@ -51,26 +51,26 @@
     <section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
       <div class="border-b border-slate-800 pb-4">
         <h2 class="text-2xl font-black text-white">System Architecture & Pipeline Overview</h2>
-        <p class="text-slate-400 text-sm mt-1">Foundational design philosophy, live data ingestion, and chronological execution sequence.</p>
+        <p class="text-slate-400 text-sm mt-1">Foundational design philosophy, live data ingestion, and chronological execution sequence.[cite: 7]</p>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-slate-300 leading-relaxed">
         <div class="space-y-3">
           <h3 class="text-base font-bold text-blue-400">1. Data Ingestion & Live API Infrastructure</h3>
           <p>
-            The engine ingests authentic play-by-play and game summary data directly from the <strong>College Football Data API (CFBD)</strong> via automated endpoints (<code class="text-blue-400 font-mono text-xs">/games</code> and <code class="text-blue-400 font-mono text-xs">/teams/fbs</code>).
+            The engine ingests authentic play-by-play and game summary data directly from the <strong>College Football Data API (CFBD)</strong> via automated endpoints (<code class="text-blue-400 font-mono text-xs">/games</code> and <code class="text-blue-400 font-mono text-xs">/teams/fbs</code>).[cite: 7]
           </p>
           <p>
-            The engine evaluates college football calendar seasons dynamically: when executing during January or February, the pipeline automatically maps post-New Year postseason matchups directly into the preceding fall campaign without data fragmentation.
+            The engine evaluates college football calendar seasons dynamically: when executing during January or February, the pipeline automatically maps post-New Year postseason matchups directly into the preceding fall campaign without data fragmentation.[cite: 7]
           </p>
         </div>
         <div class="space-y-3">
           <h3 class="text-base font-bold text-emerald-400">2. Elimination of Subjective Bias & Pure Parity</h3>
           <p>
-            Subjective human voter polls (AP Top 25, Coaches Poll) carry zero mathematical weight in this system. Furthermore, <strong>conference baseline strength is completely excluded from active in-season Pure Elo</strong>, preventing mid-tier Power 4 programs from coasting on conference prestige over resume-proven Group of 5 or Independent contenders.
+            Subjective human voter polls (AP Top 25, Coaches Poll) carry zero mathematical weight in this system.[cite: 7] Furthermore, <strong>conference baseline strength is completely excluded from active in-season Pure Elo</strong>, preventing mid-tier Power 4 programs from coasting on conference prestige over resume-proven Group of 5 or Independent contenders.[cite: 7]
           </p>
           <p>
-            Every prior season ($t-1$) is computed with the exact identical game update mechanics, margin limits, and quality multipliers as the active season ($t$), guaranteeing structural parity across time.
+            Every prior season ($t-1$) is computed with the exact identical game update mechanics, margin limits, and quality multipliers as the active season ($t$), guaranteeing structural parity across time.[cite: 7]
           </p>
         </div>
       </div>
@@ -100,7 +100,7 @@
                                        ──> Weeks 12–16: W_Prior = 0.05 * ((16 - w)/4)^1.5  (0% at Wk 16)
                                                      │
                                                      ▼
-[ 5. Master Composite & Standings ]     ──> Non-Linear SOS Offset = 35.0 * sign(ΔSOS) * (|ΔSOS| / 50.0)^2.0
+[ 5. Master Composite & Standings ]     ──> Huber-Style SOS Offset = clamp(Exp(35), ±50) + Linear(0.10)
                                        ──> Composite = (1 - W_Prior)*Pure Elo + W_Prior*Regressed Prior + SOS Offset
                                        ──> Full Power Score = Composite * ∏ (1.0 - 0.0075 * QualityFactor_loss)
 </pre>
@@ -124,7 +124,7 @@
         <div class="border-b border-slate-800 pb-4">
           <span class="text-blue-400 font-mono text-xs uppercase font-bold tracking-widest">Section 1</span>
           <h2 class="text-2xl font-black text-white mt-1">Single Season & Weekly Game Architecture</h2>
-          <p class="text-slate-400 text-sm mt-1">Chronological breakdown of each mathematical formula applied during the active season.</p>
+          <p class="text-slate-400 text-sm mt-1">Chronological breakdown of each mathematical formula applied during the active season.[cite: 7]</p>
         </div>
 
         <!-- 1.1 Pure Elo Initialization -->
@@ -136,11 +136,11 @@
           <div class="space-y-2 text-sm text-slate-300 leading-relaxed">
             <h4 class="font-bold text-white text-xs uppercase tracking-wider">Detailed Explanation</h4>
             <p>
-              Every FBS program starts Week 1 at exactly $1500.0$ on-field Elo. In Version 3.3, <strong>Pure Score is defined strictly as Pure Team Elo</strong>. No conference foundation points are added. This ensures that early wins against FCS or low-tier teams do not inherit artificial league boosts.
+              Every FBS program starts Week 1 at exactly $1500.0$ on-field Elo.[cite: 7] In Version 3.4, <strong>Pure Score is defined strictly as Pure Team Elo</strong>. No conference foundation points are added. This ensures that early wins against FCS or low-tier teams do not inherit artificial league boosts.
             </p>
             <h4 class="font-bold text-white text-xs uppercase tracking-wider pt-2">Concrete Example</h4>
             <p class="text-slate-400 text-xs">
-              Before kickoff of Week 1, Georgia (SEC), Indiana (Big Ten), BYU (Big 12), and James Madison (Sun Belt) all start with $\text{Pure Team Elo} = 1500.0$.
+              Before kickoff of Week 1, Georgia (SEC), Indiana (Big Ten), BYU (Big 12), and James Madison (Sun Belt) all start with $\text{Pure Team Elo} = 1500.0$.[cite: 7]
             </p>
           </div>
         </div>
@@ -154,14 +154,14 @@
           <div class="space-y-2 text-sm text-slate-300 leading-relaxed">
             <h4 class="font-bold text-white text-xs uppercase tracking-wider">Detailed Explanation</h4>
             <p>
-              Before game kickoff, each team's on-field rating is modified by venue difficulty. The home team receives their venue boost $\delta_H \ge 0.0$, while the visiting team receives their road penalty $\delta_A \le 0.0$. On neutral fields, both $\delta = 0.0$. Win expectancy ($E$) represents the logistic probability of victory based on the <strong>full effective Elo</strong> (including home/away deltas).
+              Before game kickoff, each team's on-field rating is modified by venue difficulty.[cite: 7] The home team receives their venue boost $\delta_H \ge 0.0$, while the visiting team receives their road penalty $\delta_A \le 0.0$.[cite: 7] On neutral fields, both $\delta = 0.0$.[cite: 7] Win expectancy ($E$) represents the logistic probability of victory based on the <strong>full effective Elo</strong> (including home/away deltas).
             </p>
             <h4 class="font-bold text-white text-xs uppercase tracking-wider pt-2">Concrete Example</h4>
             <p class="text-slate-400 text-xs">
-              Texas Tech ($1583.3$ Elo, away at Arizona $\delta_A = -19.5$) vs. Arizona ($1545.5$ Elo, home $\delta_H = +15.8$).<br>
-              Effective Ratings: Texas Tech $= 1563.8$, Arizona $= 1561.3$.<br>
-              Exponent: $(1563.8 - 1561.3) / 400.0 = 2.5 / 400.0 = 0.00625$. $10^{0.00625} = 1.0145$.<br>
-              $E_{\text{Arizona}} = 1.0 / (1.0 + 1.0145) = \mathbf{0.4964}$ (49.64% expected win), $E_{\text{TTU}} = \mathbf{0.5036}$ (50.36%).
+              Texas Tech ($1583.3$ Elo, away at Arizona $\delta_A = -19.5$) vs. Arizona ($1545.5$ Elo, home $\delta_H = +15.8$).<br>[cite: 7]
+              Effective Ratings: Texas Tech $= 1563.8$, Arizona $= 1561.3$.<br>[cite: 7]
+              Exponent: $(1563.8 - 1561.3) / 400.0 = 2.5 / 400.0 = 0.00625$. $10^{0.00625} = 1.0145$.<br>[cite: 7]
+              $E_{\text{Arizona}} = 1.0 / (1.0 + 1.0145) = \mathbf{0.4964}$ (49.64% expected win), $E_{\text{TTU}} = \mathbf{0.5036}$ (50.36%).[cite: 7]
             </p>
           </div>
         </div>
@@ -175,12 +175,12 @@
           <div class="space-y-2 text-sm text-slate-300 leading-relaxed">
             <h4 class="font-bold text-white text-xs uppercase tracking-wider">Detailed Explanation</h4>
             <p>
-              To eliminate circular feedback loops while rewarding schedule strength, opponent quality is captured <strong>chronologically at kickoff</strong>. Beating an elite program ($>1500$) increases game volatility up to $1.35\times$. Beating an FCS or bottom-tier opponent scales volatility down to $0.65\times$.
+              To eliminate circular feedback loops while rewarding schedule strength, opponent quality is captured <strong>chronologically at kickoff</strong>.[cite: 7] Beating an elite program ($>1500$) increases game volatility up to $1.35\times$.[cite: 7] Beating an FCS or bottom-tier opponent scales volatility down to $0.65\times$.[cite: 7]
             </p>
             <h4 class="font-bold text-white text-xs uppercase tracking-wider pt-2">Concrete Example</h4>
             <p class="text-slate-400 text-xs">
-              <strong>Matchup A:</strong> Beating Georgia ($1680.0$ Elo): $K_{\text{adj}} = 1.0 + (1680 - 1500) / 600 = 1.0 + 0.30 = \mathbf{1.300\times}$.<br>
-              <strong>Matchup B:</strong> Beating an FCS team ($1200.0$ Elo): $K_{\text{adj}} = 1.0 + (1200 - 1500) / 600 = 1.0 - 0.50 = 0.50 \rightarrow \mathbf{0.650\times}$ (clamped floor).
+              <strong>Matchup A:</strong> Beating Georgia ($1680.0$ Elo): $K_{\text{adj}} = 1.0 + (1680 - 1500) / 600 = 1.0 + 0.30 = \mathbf{1.300\times}$.<br>[cite: 7]
+              <strong>Matchup B:</strong> Beating an FCS team ($1200.0$ Elo): $K_{\text{adj}} = 1.0 + (1200 - 1500) / 600 = 1.0 - 0.50 = 0.50 \rightarrow \mathbf{0.650\times}$ (clamped floor).[cite: 7]
             </p>
           </div>
         </div>
@@ -194,12 +194,12 @@
           <div class="space-y-2 text-sm text-slate-300 leading-relaxed">
             <h4 class="font-bold text-white text-xs uppercase tracking-wider">Detailed Explanation</h4>
             <p>
-              A 1-point victory yields $\ln(1)/\ln(45) = 0$, guaranteeing an unscaled baseline multiplier of exactly $1.000$. A 21-point victory scales to $1.200$, and blowouts of 45+ points are capped at $1.250$ to discourage unsportsmanlike score running.
+              A 1-point victory yields $\ln(1)/\ln(45) = 0$, guaranteeing an unscaled baseline multiplier of exactly $1.000$.[cite: 7] A 21-point victory scales to $1.200$, and blowouts of 45+ points are capped at $1.250$ to discourage unsportsmanlike score running.[cite: 7]
             </p>
             <h4 class="font-bold text-white text-xs uppercase tracking-wider pt-2">Concrete Example</h4>
             <p class="text-slate-400 text-xs">
-              A 14-point win ($\vert{}\Delta\vert{} = 14$): $\ln(14) / \ln(45) = 2.63906 / 3.80666 = 0.69327$.<br>
-              $\text{Mult} = 1.00 + 0.25(0.69327) = \mathbf{1.1733}$.
+              A 14-point win ($\vert{}\Delta\vert{} = 14$): $\ln(14) / \ln(45) = 2.63906 / 3.80666 = 0.69327$.<br>[cite: 7]
+              $\text{Mult} = 1.00 + 0.25(0.69327) = \mathbf{1.1733}$.[cite: 7]
             </p>
           </div>
         </div>
@@ -214,13 +214,13 @@
           <div class="space-y-2 text-sm text-slate-300 leading-relaxed">
             <h4 class="font-bold text-white text-xs uppercase tracking-wider">Detailed Explanation</h4>
             <p>
-              To ensure "a win is always a win," every victory is guaranteed a minimum gain of $+6.0$ points. The penalty for losing is perfectly symmetrical to the base win coefficient ($K=64.0$). Losses are mathematically unbounded with no artificial floor, ensuring expected losses to elite teams naturally approach 0 points.
+              To ensure "a win is always a win," every victory is guaranteed a minimum gain of $+6.0$ points.[cite: 7] The penalty for losing is perfectly symmetrical to the base win coefficient ($K=64.0$). Losses are mathematically unbounded with no artificial floor, ensuring expected losses to elite teams naturally approach 0 points.
             </p>
             <h4 class="font-bold text-white text-xs uppercase tracking-wider pt-2">Concrete Example</h4>
             <p class="text-slate-400 text-xs">
-              Texas Tech defeats Sam Houston as a 92% favorite ($E = 0.92$, $1-E = 0.08$) by 30 points ($\text{Mult} = 1.223$, $K_{\text{adj}} = 0.65$):<br>
-              Raw win formula $= 64.0 \times 0.65 \times 0.08 \times 1.223 = +4.07$ points.<br>
-              Clamped win update $= \max(+6.0, +4.07) = \mathbf{+6.0\text{ Elo points}}$ (protected by win floor).
+              Texas Tech defeats Sam Houston as a 92% favorite ($E = 0.92$, $1-E = 0.08$) by 30 points ($\text{Mult} = 1.223$, $K_{\text{adj}} = 0.65$):<br>[cite: 7]
+              Raw win formula $= 64.0 \times 0.65 \times 0.08 \times 1.223 = +4.07$ points.<br>[cite: 7]
+              Clamped win update $= \max(+6.0, +4.07) = \mathbf{+6.0\text{ Elo points}}$ (protected by win floor).[cite: 7]
             </p>
           </div>
         </div>
@@ -235,20 +235,22 @@
           <div class="space-y-2 text-sm text-slate-300 leading-relaxed">
             <h4 class="font-bold text-white text-xs uppercase tracking-wider">Detailed Explanation</h4>
             <p>
-              Stage 1 drops convexly from 35.0% in Week 1 to a 5.0% floor in Week 12. Stage 2 slowly glides that remaining 5.0% down to 0.0% by Week 16 (National Championship Game).
+              Stage 1 drops convexly from 35.0% in Week 1 to a 5.0% floor in Week 12.[cite: 7] Stage 2 slowly glides that remaining 5.0% down to 0.0% by Week 16 (National Championship Game).[cite: 7]
             </p>
             <h4 class="font-bold text-white text-xs uppercase tracking-wider pt-2">Concrete Example</h4>
             <p class="text-slate-400 text-xs">
-              Week 6 ($w=6$): $W_{\text{Prior}} = 0.05 + 0.30 \cdot (6/11)^2 = 0.05 + 0.30(0.2975) = 0.05 + 0.089 = \mathbf{13.9\%}$ (On-field weight $= \mathbf{86.1\%}$).
+              Week 6 ($w=6$): $W_{\text{Prior}} = 0.05 + 0.30 \cdot (6/11)^2 = 0.05 + 0.30(0.2975) = 0.05 + 0.089 = \mathbf{13.9\%}$ (On-field weight $= \mathbf{86.1\%}$).[cite: 7]
             </p>
           </div>
         </div>
 
-        <!-- 1.7 Master Composite & Loss Tax -->
+        <!-- 1.7 Huber-Style Hybrid SOS & Variable Loss Tax -->
         <div class="space-y-4 bg-slate-950 p-6 rounded-xl border border-slate-800">
-          <h3 class="text-lg font-bold text-emerald-400">1.7 Master Composite Score, SOS Offset & Loss Tax</h3>
+          <h3 class="text-lg font-bold text-emerald-400">1.7 Huber-Style Hybrid SOS Offset & Loss Tax</h3>
           <div class="bg-slate-900/60 p-4 rounded-lg text-center font-mono text-sm space-y-2">
-            $$\text{Offset}_{\text{sos}} = 35.0 \times \text{sign}(\text{SOS} - 1500.0) \times \left(\frac{|\text{SOS} - 1500.0|}{50.0}\right)^{2.0}$$
+            $$\Delta\text{SOS} = \text{SOS} - 1500.0$$
+            $$\text{Exp} = 35.0 \times \text{sign}(\Delta\text{SOS}) \times \left(\frac{|\Delta\text{SOS}|}{50.0}\right)^{2.0}$$
+            $$\text{Offset}_{\text{sos}} = \text{clamp}\left(\text{Exp}, -50.0, +50.0\right) + (0.10 \times \Delta\text{SOS})$$
             <br>
             $$\text{Composite Score} = (1.0 - W_{\text{Prior}}(w)) \cdot (\text{Pure Elo}) + W_{\text{Prior}}(w) \cdot (\text{Regressed Prior}) + \text{Offset}_{\text{sos}}$$
             <br>
@@ -260,18 +262,20 @@
           <div class="space-y-2 text-sm text-slate-300 leading-relaxed">
             <h4 class="font-bold text-white text-xs uppercase tracking-wider">Detailed Explanation</h4>
             <p>
-              Version 3.3 replaces linear SOS scaling with an aggressive non-linear power curve ($2.0$ squared exponent, $50.0$ denominator, and $35.0$ multiplier), ensuring that elite gauntlets receive massive upward leverage (easily +75 points or more) while weak schedules are heavily penalized.
-              Furthermore, losses are no longer penalized by a flat $0.75\%$; instead, the loss penalty scales dynamically via a logistic curve based on the strength of the opponent. Losing to an elite powerhouse minimizes the penalty, while losing to a weak opponent extracts a maximum $0.75\%$ tax.
+              Version 3.4 replaces linear SOS scaling with a Huber-style hybrid penalty curve. The exponential core creates aggressive separation for the middle 80% of teams, while the $\pm 50.0$ clamp prevents the exponent from spiraling out of control. An unbounded linear tail ($0.10 \times \Delta\text{SOS}$) allows extreme outliers (like Utah or Texas) to continue scaling infinitely, but linearly and safely.
+            </p>
+            <p class="pt-2">
+              Furthermore, losses are no longer penalized by a flat $0.75\%$; instead, the loss penalty scales dynamically via a logistic curve based on the strength of the opponent. Losing to an elite powerhouse minimizes the penalty, while losing to a weak opponent extracts a maximum $0.75\%$ tax per loss.
             </p>
             <h4 class="font-bold text-white text-xs uppercase tracking-wider pt-2">Concrete Example</h4>
             <p class="text-slate-400 text-xs">
               Texas in Week 6 (4–2 record, Pure Elo $= 1538.3$, Regressed Prior $= 1763.9$, SOS $= 1584.2$, $W_{\text{Prior}} = 0.139$):<br>
               • On-Field Term: $(1 - 0.139) \times 1538.3 = \mathbf{1324.47}$<br>
               • Prior Term: $0.139 \times 1763.9 = \mathbf{245.18}$<br>
-              • SOS Offset: $35.0 \times (84.2 / 50.0)^{2.0} = \mathbf{+99.25}$<br>
-              • Composite Score: $1324.47 + 245.18 + 99.25 = \mathbf{1668.90}$<br>
-              • Variable Loss Tax Multiplier (2 Elite Losses): $\approx \mathbf{0.9895}$ ($1.05\%$ total penalty)<br>
-              • Full Power Score: $1668.90 \times 0.9895 = \mathbf{1651.4}$.
+              • SOS Offset: $\text{clamp}(35.0 \times (84.2 / 50.0)^{2.0}, 50.0) + (0.10 \times 84.2) = 50.0 + 8.42 = \mathbf{+58.42}$<br>
+              • Composite Score: $1324.47 + 245.18 + 58.42 = \mathbf{1628.07}$<br>
+              • Variable Loss Tax Multiplier (2 Elite Losses): $\approx \mathbf{0.9859}$ ($1.41\%$ total penalty)<br>
+              • Full Power Score: $1628.07 \times 0.9859 = \mathbf{1605.1}$.
             </p>
           </div>
         </div>
@@ -286,7 +290,7 @@
         <div class="border-b border-slate-800 pb-4">
           <span class="text-blue-400 font-mono text-xs uppercase font-bold tracking-widest">Section 2</span>
           <h2 class="text-2xl font-black text-white mt-1">Multi-Year Era Architecture (Historical Indexing)</h2>
-          <p class="text-slate-400 text-sm mt-1">How historical seasons back to 1995 are indexed, averaged across custom windows, and ranked.</p>
+          <p class="text-slate-400 text-sm mt-1">How historical seasons back to 1995 are indexed, averaged across custom windows, and ranked.[cite: 7]</p>
         </div>
 
         <!-- 2.1 Indexing Pipeline -->
@@ -306,7 +310,7 @@
           <div class="space-y-2 text-sm text-slate-300 leading-relaxed">
             <h4 class="font-bold text-white text-xs uppercase tracking-wider">Detailed Explanation</h4>
             <p>
-              To eliminate browser freezing and allow instantaneous range calculations, the build script compiles every completed historical season into a centralized JSON index containing four audited variables: season-ending power score, wins, losses, and average opponent SOS.
+              To eliminate browser freezing and allow instantaneous range calculations, the build script compiles every completed historical season into a centralized JSON index containing four audited variables: season-ending power score, wins, losses, and average opponent SOS.[cite: 7]
             </p>
           </div>
         </div>
@@ -322,14 +326,14 @@
           <div class="space-y-2 text-sm text-slate-300 leading-relaxed">
             <h4 class="font-bold text-white text-xs uppercase tracking-wider">Detailed Explanation</h4>
             <p>
-              When a user selects Start Year ($Y_{\text{start}}$) and End Year ($Y_{\text{end}}$), the client calculates arithmetic means across all sampled seasons. The client also identifies the team's Peak Season ($\max \text{Score}_y$) and Lowest Season ($\min \text{Score}_y$).
+              When a user selects Start Year ($Y_{\text{start}}$) and End Year ($Y_{\text{end}}$), the client calculates arithmetic means across all sampled seasons.[cite: 7] The client also identifies the team's Peak Season ($\max \text{Score}_y$) and Lowest Season ($\min \text{Score}_y$).[cite: 7]
             </p>
             <h4 class="font-bold text-white text-xs uppercase tracking-wider pt-2">Concrete Example</h4>
             <p class="text-slate-400 text-xs">
-              Selecting 2022 to 2024 for a 3-year window:<br>
-              Scores: 2022 ($1720.4$), 2023 ($1735.1$), 2024 ($1718.5$).<br>
-              $\text{Era Avg Score} = (1720.4 + 1735.1 + 1718.5) / 3 = \mathbf{1724.7}$.<br>
-              Record: 11-2, 11-2, 12-2 $\rightarrow 34\text{ wins, } 6\text{ losses} \rightarrow \mathbf{85.0\% \text{ Win Pct}}$.
+              Selecting 2022 to 2024 for a 3-year window:<br>[cite: 7]
+              Scores: 2022 ($1720.4$), 2023 ($1735.1$), 2024 ($1718.5$).<br>[cite: 7]
+              $\text{Era Avg Score} = (1720.4 + 1735.1 + 1718.5) / 3 = \mathbf{1724.7}$.<br>[cite: 7]
+              Record: 11-2, 11-2, 12-2 $\rightarrow 34\text{ wins, } 6\text{ losses} \rightarrow \mathbf{85.0\% \text{ Win Pct}}$.[cite: 7]
             </p>
           </div>
         </div>
@@ -344,7 +348,7 @@
         <div class="border-b border-slate-800 pb-4">
           <span class="text-blue-400 font-mono text-xs uppercase font-bold tracking-widest">Section 3</span>
           <h2 class="text-2xl font-black text-white mt-1">Conference Baselines & Offseason Seeding</h2>
-          <p class="text-slate-400 text-sm mt-1">Multi-horizon temporal tracking and dual-anchor regression seeding before Week 1.</p>
+          <p class="text-slate-400 text-sm mt-1">Multi-horizon temporal tracking and dual-anchor regression seeding before Week 1.[cite: 7]</p>
         </div>
 
         <!-- 3.1 Offseason Bridge -->
@@ -356,7 +360,7 @@
           <div class="space-y-2 text-sm text-slate-300 leading-relaxed">
             <h4 class="font-bold text-white text-xs uppercase tracking-wider">Detailed Explanation</h4>
             <p>
-              In Version 3.3, the starting seed from the preceding year is strictly the program's final on-field Pure Elo. No conference points are added, ensuring the offseason bridge begins from authentic achievement.
+              In Version 3.4, the starting seed from the preceding year is strictly the program's final on-field Pure Elo. No conference points are added, ensuring the offseason bridge begins from authentic achievement.
             </p>
           </div>
         </div>
@@ -372,14 +376,14 @@
           <div class="space-y-2 text-sm text-slate-300 leading-relaxed">
             <h4 class="font-bold text-white text-xs uppercase tracking-wider">Detailed Explanation</h4>
             <p>
-              Programs are regressed toward a 60/40 blend of their 4-year finish and conference strength. Blue-blood programs with high 4-year floors receive low regression rates ($18\%$), protecting their elite status. Outlier single-season spikes are regressed up to $42\%$ toward reality.
+              Programs are regressed toward a 60/40 blend of their 4-year finish and conference strength.[cite: 7] Blue-blood programs with high 4-year floors receive low regression rates ($18\%$), protecting their elite status.[cite: 7] Outlier single-season spikes are regressed up to $42\%$ toward reality.[cite: 7]
             </p>
             <h4 class="font-bold text-white text-xs uppercase tracking-wider pt-2">Concrete Example</h4>
             <p class="text-slate-400 text-xs">
-              Georgia entering 2026 ($\text{Score}_{t-1} = 1718.5$, $\bar{E}_{\text{4yr}} = 1748.2$, SEC $\text{Conf Base} = 1671.0$):<br>
-              $\text{Anchor} = (0.60 \times 1748.2) + (0.40 \times 1671.0) = 1048.92 + 668.40 = \mathbf{1717.32}$.<br>
-              Regression rate $R_i = \mathbf{0.200}$ ($20\%$).<br>
-              $\text{Regressed Prior} = (0.80 \times 1718.5) + (0.20 \times 1717.32) = 1374.80 + 343.46 = \mathbf{1718.3}$.
+              Georgia entering 2026 ($\text{Score}_{t-1} = 1718.5$, $\bar{E}_{\text{4yr}} = 1748.2$, SEC $\text{Conf Base} = 1671.0$):<br>[cite: 7]
+              $\text{Anchor} = (0.60 \times 1748.2) + (0.40 \times 1671.0) = 1048.92 + 668.40 = \mathbf{1717.32}$.<br>[cite: 7]
+              Regression rate $R_i = \mathbf{0.200}$ ($20\%$).<br>[cite: 7]
+              $\text{Regressed Prior} = (0.80 \times 1718.5) + (0.20 \times 1717.32) = 1374.80 + 343.46 = \mathbf{1718.3}$.[cite: 7]
             </p>
           </div>
         </div>
@@ -394,7 +398,7 @@
         <div class="border-b border-slate-800 pb-4">
           <span class="text-blue-400 font-mono text-xs uppercase font-bold tracking-widest">Section 4</span>
           <h2 class="text-2xl font-black text-white mt-1">Decoupled Venue Splits & Worked Proof</h2>
-          <p class="text-slate-400 text-sm mt-1">Stadium advantage derivation from 4-year differentials and full upset arithmetic proof.</p>
+          <p class="text-slate-400 text-sm mt-1">Stadium advantage derivation from 4-year differentials and full upset arithmetic proof.[cite: 7]</p>
         </div>
 
         <!-- 4.1 Derivation -->
@@ -412,15 +416,15 @@
         <div class="space-y-4 bg-slate-950 p-6 rounded-xl border border-slate-800">
           <h3 class="text-lg font-bold text-amber-400">4.2 Worked Proof: Vanderbilt 40, Alabama 35</h3>
           <div class="bg-slate-900 p-5 rounded-lg font-mono text-xs text-slate-300 space-y-2">
-            <div class="text-white font-bold border-b border-slate-800 pb-2">Matchup: Alabama (Away) at Vanderbilt (Home) | Final Margin: +5 points</div>
-            <div>• Effective Home Elo: Vandy $1450.0 + \delta_H(+4.8) = \mathbf{1454.8}$</div>
-            <div>• Effective Away Elo: Alabama $1674.0 + \delta_A(-18.9) = \mathbf{1655.1}$</div>
-            <div>• Win Expectancy Exponent: $(1655.1 - 1454.8) / 400 = 0.50075 \rightarrow 10^{0.50075} = 3.1677$</div>
-            <div>• Win Expectancies: $E_{\text{Vandy}} = 1.0 / (1 + 3.1677) = \mathbf{0.2399}$ (24.0%), $E_{\text{Bama}} = \mathbf{0.7601}$ (76.0%)</div>
-            <div>• 1-Point Margin Multiplier: $\text{Mult} = 1.00 + 0.25 \cdot \frac{\ln(5)}{\ln(45)} = 1.00 + 0.25(0.4228) = \mathbf{1.1057}$</div>
-            <div>• Opponent Scalers: $K_{\text{adj}}(\text{Vandy vs Bama}) = 1.0 + (1674 - 1500)/600 = \mathbf{1.290}$</div>
-            <div>• Opponent Scalers: $K_{\text{adj}}(\text{Bama vs Vandy}) = 1.0 + (1450 - 1500)/600 = \mathbf{0.917}$</div>
-            <div class="pt-2 text-emerald-400 font-bold">Vanderbilt Update: +64.0 * 1.290 * (1.0 - 0.2399) * 1.1057 = +69.34 Elo points</div>
+            <div class="text-white font-bold border-b border-slate-800 pb-2">Matchup: Alabama (Away) at Vanderbilt (Home) | Final Margin: +5 points[cite: 7]</div>
+            <div>• Effective Home Elo: Vandy $1450.0 + \delta_H(+4.8) = \mathbf{1454.8}$[cite: 7]</div>
+            <div>• Effective Away Elo: Alabama $1674.0 + \delta_A(-18.9) = \mathbf{1655.1}$[cite: 7]</div>
+            <div>• Win Expectancy Exponent: $(1655.1 - 1454.8) / 400 = 0.50075 \rightarrow 10^{0.50075} = 3.1677$[cite: 7]</div>
+            <div>• Win Expectancies: $E_{\text{Vandy}} = 1.0 / (1 + 3.1677) = \mathbf{0.2399}$ (24.0%), $E_{\text{Bama}} = \mathbf{0.7601}$ (76.0%)[cite: 7]</div>
+            <div>• 1-Point Margin Multiplier: $\text{Mult} = 1.00 + 0.25 \cdot \frac{\ln(5)}{\ln(45)} = 1.00 + 0.25(0.4228) = \mathbf{1.1057}$[cite: 7]</div>
+            <div>• Opponent Scalers: $K_{\text{adj}}(\text{Vandy vs Bama}) = 1.0 + (1674 - 1500)/600 = \mathbf{1.290}$[cite: 7]</div>
+            <div>• Opponent Scalers: $K_{\text{adj}}(\text{Bama vs Vandy}) = 1.0 + (1450 - 1500)/600 = \mathbf{0.917}$[cite: 7]</div>
+            <div class="pt-2 text-emerald-400 font-bold">Vanderbilt Update: +64.0 * 1.290 * (1.0 - 0.2399) * 1.1057 = +69.34 Elo points[cite: 7]</div>
             <div class="text-rose-400 font-bold">Alabama Update: -64.0 * 0.917 * (0.7601) * 1.1057 = -49.33 Elo points</div>
           </div>
         </div>
@@ -454,6 +458,7 @@
         const exportHeader = docClone.querySelector(".export-controls");
         if (exportHeader) exportHeader.remove();
 
+        // Reveal all panes in the downloaded document[cite: 7]
         docClone.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('hidden'));
 
         const htmlHeader = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>CFB Mathematical Specification</title></head><body>";
