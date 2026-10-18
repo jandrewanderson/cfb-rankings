@@ -4,7 +4,7 @@
     "conf": "Big Ten",
     "record": "13\u20130",
     "full_score": 1924.3,
-    "ap_rank": 2,
+    "ap_rank": "-",
     "delta_wk": 5.5,
     "loss_tax_pct": 0.0,
     "sos": 1548.6,
@@ -52,7 +52,7 @@
     "conf": "ACC",
     "record": "10\u20133",
     "full_score": 1756.8,
-    "ap_rank": 18,
+    "ap_rank": "-",
     "delta_wk": 7.3,
     "loss_tax_pct": 1.46,
     "sos": 1556.2,
@@ -100,8 +100,13 @@
     "conf": "Big Ten",
     "record": "10\u20132",
     "full_score": 1720.2,
+<<<<<<< HEAD
     "ap_rank": 6,
     "delta_wk": 51.6,
+=======
+    "ap_rank": "-",
+    "delta_wk": 53.1,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 0.69,
     "sos": 1532.0,
     "sos_rank": 13,
@@ -146,9 +151,15 @@
     "team": "Alabama",
     "conf": "SEC",
     "record": "9\u20132",
+<<<<<<< HEAD
     "full_score": 1710.8,
     "ap_rank": 4,
     "delta_wk": 10.3,
+=======
+    "full_score": 1712.6,
+    "ap_rank": "-",
+    "delta_wk": 8.4,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 1.04,
     "sos": 1527.2,
     "sos_rank": 17,
@@ -193,7 +204,7 @@
     "conf": "SEC",
     "record": "11\u20132",
     "full_score": 1710.0,
-    "ap_rank": 7,
+    "ap_rank": "-",
     "delta_wk": 12.2,
     "loss_tax_pct": 0.87,
     "sos": 1499.2,
@@ -240,9 +251,15 @@
     "team": "BYU",
     "conf": "Big 12",
     "record": "9\u20131",
+<<<<<<< HEAD
     "full_score": 1699.4,
     "ap_rank": 8,
     "delta_wk": -46.0,
+=======
+    "full_score": 1698.6,
+    "ap_rank": "-",
+    "delta_wk": -42.0,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 0.41,
     "sos": 1506.1,
     "sos_rank": 37,
@@ -285,9 +302,15 @@
     "team": "Utah",
     "conf": "Big 12",
     "record": "8\u20132",
+<<<<<<< HEAD
     "full_score": 1681.7,
     "ap_rank": 17,
     "delta_wk": 4.6,
+=======
+    "full_score": 1682.0,
+    "ap_rank": "-",
+    "delta_wk": 4.8,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 1.06,
     "sos": 1504.0,
     "sos_rank": 40,
@@ -330,9 +353,15 @@
     "team": "Texas",
     "conf": "SEC",
     "record": "8\u20132",
+<<<<<<< HEAD
     "full_score": 1677.2,
     "ap_rank": 13,
     "delta_wk": -0.4,
+=======
+    "full_score": 1675.1,
+    "ap_rank": "-",
+    "delta_wk": -1.2,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 1.66,
     "sos": 1489.1,
     "sos_rank": 57,
@@ -372,12 +401,63 @@
     "rank": 8
   },
   {
+<<<<<<< HEAD
     "team": "Ohio State",
     "conf": "Big Ten",
     "record": "9\u20131",
     "full_score": 1669.2,
     "ap_rank": 1,
     "delta_wk": -2.8,
+=======
+    "team": "Notre Dame",
+    "conf": "FBS Independents",
+    "record": "7\u20132",
+    "full_score": 1669.4,
+    "ap_rank": "-",
+    "delta_wk": 44.5,
+    "loss_tax_pct": 1.36,
+    "sos": 1521.2,
+    "sos_rank": 22,
+    "sos_offset": 8.4,
+    "conf_4yr": 1757.8,
+    "conf_1yr_prior": 1749.8,
+    "conf_cur": 1730.8,
+    "score_w_prior_rank": 9,
+    "score_w_prior": 1684.1,
+    "pure_elo_rank": 9,
+    "pure_elo": 1684.1,
+    "venue_rank": 61,
+    "margin_str": "+22.6 / +13.9 (+8.7)",
+    "home_elo_str": "1701.7 (+17.6)",
+    "away_elo_str": "1667.1 (-17.0)",
+    "spread": 8.7,
+    "d_h": 17.6,
+    "d_a": -17.0,
+    "prev_raw_elo": 1500.0,
+    "reg_rate_pct": 28.0,
+    "prior_shift": 0.0,
+    "w_prior_pct": 5.2,
+    "opponents": [
+      "Miami",
+      "Texas A&M",
+      "Purdue",
+      "Arkansas",
+      "Boise State",
+      "NC State",
+      "USC",
+      "Boston College",
+      "Navy"
+    ],
+    "rank": 9
+  },
+  {
+    "team": "Ohio State",
+    "conf": "Big Ten",
+    "record": "9\u20131",
+    "full_score": 1665.7,
+    "ap_rank": "-",
+    "delta_wk": -5.5,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 0.43,
     "sos": 1525.2,
     "sos_rank": 19,
@@ -464,9 +544,15 @@
     "team": "Texas A&M",
     "conf": "SEC",
     "record": "9\u20131",
+<<<<<<< HEAD
     "full_score": 1661.8,
     "ap_rank": 3,
     "delta_wk": 26.4,
+=======
+    "full_score": 1662.8,
+    "ap_rank": "-",
+    "delta_wk": 26.9,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 0.58,
     "sos": 1491.7,
     "sos_rank": 51,
@@ -554,9 +640,15 @@
     "team": "Texas Tech",
     "conf": "Big 12",
     "record": "9\u20132",
+<<<<<<< HEAD
     "full_score": 1652.1,
     "ap_rank": 9,
     "delta_wk": 50.6,
+=======
+    "full_score": 1652.0,
+    "ap_rank": "-",
+    "delta_wk": 53.8,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 0.98,
     "sos": 1501.6,
     "sos_rank": 42,
@@ -600,9 +692,15 @@
     "team": "Georgia",
     "conf": "SEC",
     "record": "8\u20132",
+<<<<<<< HEAD
     "full_score": 1643.8,
     "ap_rank": 5,
     "delta_wk": 13.1,
+=======
+    "full_score": 1641.9,
+    "ap_rank": "-",
+    "delta_wk": 13.2,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 0.95,
     "sos": 1516.7,
     "sos_rank": 26,
@@ -645,9 +743,15 @@
     "team": "Virginia",
     "conf": "ACC",
     "record": "9\u20132",
+<<<<<<< HEAD
     "full_score": 1622.5,
     "ap_rank": 12,
     "delta_wk": -62.6,
+=======
+    "full_score": 1621.5,
+    "ap_rank": "-",
+    "delta_wk": -59.8,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 1.4,
     "sos": 1481.3,
     "sos_rank": 66,
@@ -781,9 +885,15 @@
     "team": "USC",
     "conf": "Big Ten",
     "record": "7\u20133",
+<<<<<<< HEAD
     "full_score": 1587.8,
     "ap_rank": 20,
     "delta_wk": 21.6,
+=======
+    "full_score": 1584.4,
+    "ap_rank": "-",
+    "delta_wk": 22.3,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 1.92,
     "sos": 1527.7,
     "sos_rank": 15,
@@ -871,9 +981,15 @@
     "team": "Louisville",
     "conf": "ACC",
     "record": "8\u20132",
+<<<<<<< HEAD
     "full_score": 1579.8,
     "ap_rank": 14,
     "delta_wk": -56.6,
+=======
+    "full_score": 1578.1,
+    "ap_rank": "-",
+    "delta_wk": -58.4,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 1.39,
     "sos": 1477.9,
     "sos_rank": 69,
@@ -1052,9 +1168,15 @@
     "team": "Michigan",
     "conf": "Big Ten",
     "record": "7\u20133",
+<<<<<<< HEAD
     "full_score": 1573.0,
     "ap_rank": 21,
     "delta_wk": 2.4,
+=======
+    "full_score": 1572.2,
+    "ap_rank": "-",
+    "delta_wk": 2.8,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 1.71,
     "sos": 1518.3,
     "sos_rank": 25,
@@ -1232,9 +1354,15 @@
     "team": "Oklahoma",
     "conf": "SEC",
     "record": "7\u20133",
+<<<<<<< HEAD
     "full_score": 1562.8,
     "ap_rank": 11,
     "delta_wk": -0.6,
+=======
+    "full_score": 1561.6,
+    "ap_rank": "-",
+    "delta_wk": 0.0,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 1.49,
     "sos": 1512.8,
     "sos_rank": 31,
@@ -1277,9 +1405,15 @@
     "team": "Georgia Tech",
     "conf": "ACC",
     "record": "8\u20132",
+<<<<<<< HEAD
     "full_score": 1561.1,
     "ap_rank": 16,
     "delta_wk": -10.0,
+=======
+    "full_score": 1559.7,
+    "ap_rank": "-",
+    "delta_wk": -10.6,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 1.24,
     "sos": 1474.7,
     "sos_rank": 76,
@@ -1503,9 +1637,15 @@
     "team": "Washington",
     "conf": "Big Ten",
     "record": "7\u20133",
+<<<<<<< HEAD
     "full_score": 1549.6,
     "ap_rank": 24,
     "delta_wk": -54.0,
+=======
+    "full_score": 1548.2,
+    "ap_rank": "-",
+    "delta_wk": -55.9,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 2.21,
     "sos": 1473.1,
     "sos_rank": 80,
@@ -1638,9 +1778,15 @@
     "team": "Vanderbilt",
     "conf": "SEC",
     "record": "8\u20133",
+<<<<<<< HEAD
     "full_score": 1545.4,
     "ap_rank": 15,
     "delta_wk": 1.2,
+=======
+    "full_score": 1544.8,
+    "ap_rank": "-",
+    "delta_wk": -0.2,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 1.65,
     "sos": 1469.6,
     "sos_rank": 84,
@@ -1865,9 +2011,15 @@
     "team": "Cincinnati",
     "conf": "Big 12",
     "record": "7\u20133",
+<<<<<<< HEAD
     "full_score": 1517.7,
     "ap_rank": 25,
     "delta_wk": -7.4,
+=======
+    "full_score": 1509.0,
+    "ap_rank": "-",
+    "delta_wk": -7.5,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 1.85,
     "sos": 1469.8,
     "sos_rank": 83,
@@ -2496,9 +2648,15 @@
     "team": "Memphis",
     "conf": "American Athletic",
     "record": "8\u20133",
+<<<<<<< HEAD
     "full_score": 1466.9,
     "ap_rank": 22,
     "delta_wk": -51.6,
+=======
+    "full_score": 1466.3,
+    "ap_rank": "-",
+    "delta_wk": -51.1,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 2.2,
     "sos": 1434.7,
     "sos_rank": 121,
@@ -2542,9 +2700,15 @@
     "team": "Tennessee",
     "conf": "SEC",
     "record": "6\u20134",
+<<<<<<< HEAD
     "full_score": 1462.1,
     "ap_rank": 23,
     "delta_wk": -0.7,
+=======
+    "full_score": 1462.5,
+    "ap_rank": "-",
+    "delta_wk": 0.0,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 2.27,
     "sos": 1473.3,
     "sos_rank": 79,
@@ -2674,6 +2838,7 @@
     "rank": 59
   },
   {
+<<<<<<< HEAD
     "team": "Baylor",
     "conf": "Big 12",
     "record": "5\u20134",
@@ -2700,6 +2865,32 @@
     "spread": 0.9,
     "d_h": 4.5,
     "d_a": 0.0,
+=======
+    "team": "Missouri",
+    "conf": "SEC",
+    "record": "6\u20134",
+    "full_score": 1451.8,
+    "ap_rank": "-",
+    "delta_wk": -29.7,
+    "loss_tax_pct": 1.78,
+    "sos": 1475.3,
+    "sos_rank": 71,
+    "sos_offset": -11.0,
+    "conf_4yr": 1707.9,
+    "conf_1yr_prior": 1699.9,
+    "conf_cur": 1680.9,
+    "score_w_prior_rank": 73,
+    "score_w_prior": 1489.0,
+    "pure_elo_rank": 73,
+    "pure_elo": 1489.0,
+    "venue_rank": 25,
+    "margin_str": "+10.7 / -0.8 (+11.5)",
+    "home_elo_str": "1517.9 (+28.9)",
+    "away_elo_str": "1472.1 (-16.9)",
+    "spread": 11.5,
+    "d_h": 28.9,
+    "d_a": -16.9,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "prev_raw_elo": 1500.0,
     "reg_rate_pct": 28.0,
     "prior_shift": 0.0,

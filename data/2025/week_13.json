@@ -4,7 +4,7 @@
     "conf": "Big Ten",
     "record": "14\u20130",
     "full_score": 1940.5,
-    "ap_rank": 2,
+    "ap_rank": "-",
     "delta_wk": 23.1,
     "loss_tax_pct": 0.0,
     "sos": 1550.1,
@@ -53,7 +53,7 @@
     "conf": "Big Ten",
     "record": "12\u20132",
     "full_score": 1786.1,
-    "ap_rank": 6,
+    "ap_rank": "-",
     "delta_wk": 46.8,
     "loss_tax_pct": 0.69,
     "sos": 1546.9,
@@ -102,7 +102,7 @@
     "conf": "ACC",
     "record": "12\u20133",
     "full_score": 1782.3,
-    "ap_rank": 14,
+    "ap_rank": "-",
     "delta_wk": -0.8,
     "loss_tax_pct": 1.45,
     "sos": 1550.6,
@@ -152,8 +152,13 @@
     "conf": "Big 12",
     "record": "11\u20131",
     "full_score": 1744.2,
+<<<<<<< HEAD
     "ap_rank": 11,
     "delta_wk": 20.0,
+=======
+    "ap_rank": "-",
+    "delta_wk": 20.4,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 0.41,
     "sos": 1520.0,
     "sos_rank": 26,
@@ -199,7 +204,7 @@
     "conf": "SEC",
     "record": "12\u20132",
     "full_score": 1735.7,
-    "ap_rank": 5,
+    "ap_rank": "-",
     "delta_wk": 7.3,
     "loss_tax_pct": 0.82,
     "sos": 1511.2,
@@ -248,8 +253,13 @@
     "conf": "FBS Independents",
     "record": "9\u20132",
     "full_score": 1708.3,
+<<<<<<< HEAD
     "ap_rank": 9,
     "delta_wk": 5.1,
+=======
+    "ap_rank": "-",
+    "delta_wk": 0.5,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 1.36,
     "sos": 1507.5,
     "sos_rank": 37,
@@ -294,7 +304,7 @@
     "conf": "Big 12",
     "record": "10\u20132",
     "full_score": 1705.4,
-    "ap_rank": 13,
+    "ap_rank": "-",
     "delta_wk": 3.8,
     "loss_tax_pct": 1.06,
     "sos": 1484.7,
@@ -341,8 +351,13 @@
     "conf": "American Athletic",
     "record": "11\u20131",
     "full_score": 1702.3,
+<<<<<<< HEAD
     "ap_rank": 22,
     "delta_wk": 21.1,
+=======
+    "ap_rank": "-",
+    "delta_wk": 21.6,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 0.64,
     "sos": 1477.1,
     "sos_rank": 73,
@@ -388,7 +403,7 @@
     "conf": "SEC",
     "record": "10\u20133",
     "full_score": 1684.7,
-    "ap_rank": 10,
+    "ap_rank": "-",
     "delta_wk": -9.6,
     "loss_tax_pct": 1.53,
     "sos": 1532.8,
@@ -436,8 +451,13 @@
     "conf": "Big Ten",
     "record": "11\u20131",
     "full_score": 1683.4,
+<<<<<<< HEAD
     "ap_rank": 1,
     "delta_wk": 8.6,
+=======
+    "ap_rank": "-",
+    "delta_wk": 10.5,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 0.36,
     "sos": 1510.9,
     "sos_rank": 33,
@@ -483,8 +503,13 @@
     "conf": "SEC",
     "record": "10\u20132",
     "full_score": 1679.0,
+<<<<<<< HEAD
     "ap_rank": 4,
     "delta_wk": -7.1,
+=======
+    "ap_rank": "-",
+    "delta_wk": -7.3,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 0.93,
     "sos": 1503.7,
     "sos_rank": 42,
@@ -530,7 +555,7 @@
     "conf": "Big 12",
     "record": "10\u20132",
     "full_score": 1668.5,
-    "ap_rank": 6,
+    "ap_rank": "-",
     "delta_wk": 6.3,
     "loss_tax_pct": 0.89,
     "sos": 1495.8,
@@ -577,8 +602,13 @@
     "conf": "SEC",
     "record": "11\u20131",
     "full_score": 1668.1,
+<<<<<<< HEAD
     "ap_rank": 3,
     "delta_wk": 0.8,
+=======
+    "ap_rank": "-",
+    "delta_wk": 0.2,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 0.48,
     "sos": 1479.3,
     "sos_rank": 72,
@@ -624,7 +654,7 @@
     "conf": "SEC",
     "record": "9\u20133",
     "full_score": 1648.5,
-    "ap_rank": 17,
+    "ap_rank": "-",
     "delta_wk": 3.3,
     "loss_tax_pct": 2.02,
     "sos": 1487.0,
@@ -671,7 +701,7 @@
     "conf": "ACC",
     "record": "10\u20132",
     "full_score": 1647.4,
-    "ap_rank": 19,
+    "ap_rank": "-",
     "delta_wk": -7.2,
     "loss_tax_pct": 1.4,
     "sos": 1476.9,
@@ -718,8 +748,13 @@
     "conf": "SEC",
     "record": "9\u20133",
     "full_score": 1640.5,
+<<<<<<< HEAD
     "ap_rank": 8,
     "delta_wk": 21.0,
+=======
+    "ap_rank": "-",
+    "delta_wk": 20.2,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 1.57,
     "sos": 1529.3,
     "sos_rank": 19,
@@ -765,8 +800,13 @@
     "conf": "American Athletic",
     "record": "9\u20133",
     "full_score": 1640.2,
+<<<<<<< HEAD
     "ap_rank": 24,
     "delta_wk": 21.7,
+=======
+    "ap_rank": "-",
+    "delta_wk": 18.8,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 1.7,
     "sos": 1547.5,
     "sos_rank": 10,
@@ -905,8 +945,13 @@
     "conf": "Sun Belt",
     "record": "10\u20132",
     "full_score": 1601.6,
+<<<<<<< HEAD
     "ap_rank": 21,
     "delta_wk": 24.9,
+=======
+    "ap_rank": "-",
+    "delta_wk": 26.1,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 1.04,
     "sos": 1463.3,
     "sos_rank": 90,
@@ -952,8 +997,13 @@
     "conf": "Big Ten",
     "record": "9\u20133",
     "full_score": 1597.0,
+<<<<<<< HEAD
     "ap_rank": 18,
     "delta_wk": 10.1,
+=======
+    "ap_rank": "-",
+    "delta_wk": 10.4,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 1.76,
     "sos": 1515.4,
     "sos_rank": 28,
@@ -1046,8 +1096,13 @@
     "conf": "Big Ten",
     "record": "8\u20134",
     "full_score": 1589.9,
+<<<<<<< HEAD
     "ap_rank": 16,
     "delta_wk": -25.3,
+=======
+    "ap_rank": "-",
+    "delta_wk": -23.7,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 2.23,
     "sos": 1549.8,
     "sos_rank": 9,
@@ -1328,8 +1383,13 @@
     "conf": "SEC",
     "record": "9\u20133",
     "full_score": 1559.1,
+<<<<<<< HEAD
     "ap_rank": 12,
     "delta_wk": 27.6,
+=======
+    "ap_rank": "-",
+    "delta_wk": 29.2,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 1.68,
     "sos": 1468.0,
     "sos_rank": 84,
@@ -1751,8 +1811,13 @@
     "conf": "Big 12",
     "record": "9\u20133",
     "full_score": 1528.3,
+<<<<<<< HEAD
     "ap_rank": 25,
     "delta_wk": -30.5,
+=======
+    "ap_rank": "-",
+    "delta_wk": -30.3,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 2.28,
     "sos": 1449.9,
     "sos_rank": 106,
@@ -2079,8 +2144,13 @@
     "conf": "ACC",
     "record": "9\u20133",
     "full_score": 1507.7,
+<<<<<<< HEAD
     "ap_rank": 15,
     "delta_wk": -44.3,
+=======
+    "ap_rank": "-",
+    "delta_wk": -38.2,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 1.76,
     "sos": 1465.3,
     "sos_rank": 87,
@@ -2501,8 +2571,13 @@
     "conf": "SEC",
     "record": "8\u20134",
     "full_score": 1472.5,
+<<<<<<< HEAD
     "ap_rank": 20,
     "delta_wk": 4.2,
+=======
+    "ap_rank": "-",
+    "delta_wk": 5.4,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 2.32,
     "sos": 1454.9,
     "sos_rank": 100,
@@ -2877,8 +2952,13 @@
     "conf": "SEC",
     "record": "7\u20135",
     "full_score": 1456.1,
+<<<<<<< HEAD
     "ap_rank": 23,
     "delta_wk": -11.6,
+=======
+    "ap_rank": "-",
+    "delta_wk": -11.0,
+>>>>>>> 52d811e5ebe5b2632ba06d5b510aa2c9b0ee890c
     "loss_tax_pct": 2.09,
     "sos": 1488.8,
     "sos_rank": 56,
