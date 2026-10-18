@@ -11,18 +11,18 @@
       body { background-color: white !important; color: black !important; }
       #tableContainer { overflow: visible !important; border: none !important; }
       table { width: 100% !important; border-collapse: collapse !important; color: black !important; }
-      th, td { border: 1px solid #cbd5e1 !important; color: black !important; padding: 4px 8px !important; }
+      th, td { border: 1px solid #cbd5e1 !important; color: black !important; padding: 4px 6px !important; }
     }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen">
-  <div class="max-w-[1600px] mx-auto px-4 py-8">
+  <div class="max-w-[1750px] mx-auto px-4 py-8">
     
     <!-- Top Header Navigation -->
     <header class="flex flex-col md:flex-row justify-between items-start md:items-center pb-6 border-b border-slate-800 gap-4">
       <div>
         <h1 class="text-3xl font-extrabold tracking-tight text-white">CFB Power Rankings & Elo Engine</h1>
-        <p class="text-slate-400 text-sm mt-1">134-Team FBS Asymmetric Model & Decoupled Venue Intelligence</p>
+        <p class="text-slate-400 text-sm mt-1">134-Team FBS Dynamic Engine | Live Unclamped SOS & Venue Intelligence</p>
       </div>
       <nav class="flex gap-2 bg-slate-900 p-1.5 rounded-lg border border-slate-800">
         <button onclick="switchTab('rankings')" id="tab-rankings" class="px-4 py-2 rounded-md font-semibold text-sm bg-blue-600 text-white shadow-lg shadow-blue-600/30">Rankings</button>
@@ -32,20 +32,22 @@
       </nav>
     </header>
 
-    <!-- Controls, Dropdowns, Search & Exports -->
+    <!-- Controls, Dropdowns & Badges -->
     <div class="my-6 flex flex-wrap gap-4 items-center justify-between bg-slate-900/60 p-4 rounded-xl border border-slate-800/80 no-print">
       <div class="flex flex-wrap items-center gap-3">
         <div>
           <label class="block text-xs uppercase font-bold text-slate-400 mb-1">Mode</label>
           <select id="modeSelect" onchange="onModeChange()" class="bg-slate-800 border border-slate-700 text-white text-sm rounded-lg px-3 py-2 outline-none">
-            <option value="single">Single Season</option>
-            <option value="multi">Multi-Year Range</option>
+            <option value="single" selected>Single Season</option>
+            <option value="multi">Multi-Year Era Range</option>
           </select>
         </div>
+        
+        <!-- Single Season Controls -->
         <div id="seasonContainer">
           <label class="block text-xs uppercase font-bold text-slate-400 mb-1">Season</label>
           <select id="seasonSelect" onchange="onSeasonChange()" class="bg-slate-800 border border-slate-700 text-white text-sm rounded-lg px-3 py-2 outline-none">
-            <option value="2026" selected>2026 (Current)</option>
+            <option value="2026" selected>2026</option>
             <option value="2025">2025</option>
           </select>
         </div>
@@ -55,14 +57,24 @@
             <option value="latest" selected>Latest</option>
           </select>
         </div>
-        <div id="rangeContainer" class="hidden">
-          <label class="block text-xs uppercase font-bold text-slate-400 mb-1">Range Window</label>
-          <select id="rangeSelect" onchange="loadRankings()" class="bg-slate-800 border border-slate-700 text-white text-sm rounded-lg px-3 py-2 outline-none">
-            <option value="3yr">Last 3 Years (2024-2026)</option>
-            <option value="5yr">Last 5 Years (2022-2026)</option>
-            <option value="10yr">Last 10 Years (2017-2026)</option>
-            <option value="30yr">Last 30 Years (1997-2026)</option>
-          </select>
+
+        <!-- Multi-Year Dynamic Era Range Controls -->
+        <div id="rangeContainer" class="hidden flex items-center gap-2">
+          <div>
+            <label class="block text-xs uppercase font-bold text-slate-400 mb-1">Start Year</label>
+            <select id="startYearSelect" onchange="renderEraView()" class="bg-slate-800 border border-slate-700 text-white text-sm rounded-lg px-3 py-2 outline-none"></select>
+          </div>
+          <div>
+            <label class="block text-xs uppercase font-bold text-slate-400 mb-1">End Year</label>
+            <select id="endYearSelect" onchange="renderEraView()" class="bg-slate-800 border border-slate-700 text-white text-sm rounded-lg px-3 py-2 outline-none"></select>
+          </div>
+        </div>
+
+        <!-- Live Prior Decay Weight Badge -->
+        <div id="priorBadgeContainer" class="pt-5">
+          <span id="priorWeightBadge" class="bg-blue-600/20 text-blue-400 border border-blue-500/30 text-xs font-bold px-3 py-1.5 rounded-lg font-mono">
+            Active Prior: --%
+          </span>
         </div>
       </div>
 
